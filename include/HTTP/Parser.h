@@ -8,10 +8,14 @@
  * 
  */
 #pragma once
+#include <iostream>
+#include <string.h>
 
 namespace HTTP
 {
     class Parser{
+    private:
+    const std::string CRLF = "\r\n";
     public:
         /**
          * @brief Default constructor
@@ -30,6 +34,12 @@ namespace HTTP
         Parser(Parser&&) = delete;
         Parser& operator=(Parser &&) = delete;
 
+        bool validateRequestStartLine(const std::string& message);
+
+        bool endsWith(const std::string &mainStr, const std::string &toMatch);
+        bool validateURI(std::string& message);
+        bool validateVersion(std::string& ver_token);
+       
     private:
     };
 
