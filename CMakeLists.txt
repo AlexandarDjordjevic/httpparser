@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 set(source
-        source/Parser.cpp
+        source/HTTPRequest.cpp
     )
 include_directories(${this} include)
 
