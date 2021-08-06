@@ -1,4 +1,4 @@
-#include <HTTP/HTTPRequest.h>
+#include <HTTP/Request.h>
 #include <regex>
 
 namespace HTTP{
@@ -15,24 +15,28 @@ namespace HTTP{
         return tokens;
     }
 
-    HTTPRequest::HTTPRequest()
+    Request::Request()
     {
     }
-    HTTPRequest::~HTTPRequest()
+    Request::~Request()
     {
     }
 
-    bool validateMethod(const std::string &token){
-        const std::vector<std::string> methodType = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
-        for (auto &method : methodType){
-            if (method == token){
-                return true;
-            }
+    bool Request::validateMethod(const std::string& message){
+        auto it = table.find(message);
+        
+
+        if (it != table.end())
+        {
+            method = it->second;
+            return true;
+            
         }
         return false;
+        
     }
 
-    bool HTTPRequest::validateRequestStartLine(const std::string &message)
+    bool Request::validateRequestStartLine(const std::string &message)
     {
         if (message == ""){
             return false;
@@ -45,6 +49,7 @@ namespace HTTP{
         std::string method = tokens[0];
         std::string URI = tokens[1];
         std::string version = tokens[2];
+        Method m;
 
         if (validateMethod(method) == false){
             return false;
@@ -56,12 +61,12 @@ namespace HTTP{
 
         if (!validateVersion(version)) return false;
 
-        this->request_method = method;
-        this->request_uri = URI;
-        this->request_version = version;
+        //this->request_method = method;
+        //this->request_uri = URI;
+        //this->request_version = version;
         return true;
     }
-    bool HTTPRequest::validateURI(std::string &uri)
+    bool Request::validateURI(std::string &uri)
     {
         if (uri == "*")
         { 
@@ -79,14 +84,14 @@ namespace HTTP{
         return false;
         
     }
-    bool HTTPRequest::validateVersion(std::string& ver_token){
+    bool Request::validateVersion(std::string& ver_token){
         if (ver_token != "HTTP/0.9" && ver_token!= "HTTP/1.0" && ver_token != "HTTP/1.1" && ver_token != "HTTP/2.0")
             return false;
         return true;
     }
     
 
-    bool HTTPRequest::endsWith(const std::string &mainStr, const std::string &toMatch)
+    bool Request::endsWith(const std::string &mainStr, const std::string &toMatch)
     {
         if (mainStr.size() >= toMatch.size() &&
             mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0)
