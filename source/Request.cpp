@@ -1,5 +1,4 @@
 #include <HTTP/Request.h>
-#include <regex>
 
 namespace HTTP{
 
@@ -22,13 +21,18 @@ namespace HTTP{
     {
     }
 
+    Method Request::getMethod()
+    {
+        return m_method;
+    }
+
     bool Request::validateMethod(const std::string& message){
         auto it = table.find(message);
         
 
         if (it != table.end())
         {
-            method = it->second;
+            m_method = it->second;
             return true;
             
         }
@@ -36,58 +40,67 @@ namespace HTTP{
         
     }
 
-    bool Request::validateRequestStartLine(const std::string &message)
+    bool Request::parseStartLine(const std::string &message)
     {
         if (message == ""){
             return false;
         }
-        
         if (endsWith(message, CRLF) == false){
             return false;
         }
         std::vector<std::string> tokens = splitString(message);
-        std::string method = tokens[0];
+        std::string methodtoken = tokens[0];
         std::string URI = tokens[1];
         std::string version = tokens[2];
-        Method m;
 
-        if (validateMethod(method) == false){
+        if (validateMethod(methodtoken) == false){
             return false;
         }
-
-        std::string htp=URI.substr(0,7);
-
-        if(!validateURI(URI)) return false;
-
-        if (!validateVersion(version)) return false;
-
-        //this->request_method = method;
-        //this->request_uri = URI;
-        //this->request_version = version;
+        
+        if(validateURI(URI) == false) {
+            return false;
+        }
+        m_uri = URI;
+        if (validateVersion(version) == false){
+            return false;
+        }
+        m_version = version;
         return true;
     }
-    bool Request::validateURI(std::string &uri)
+    bool Request::validateURI(std::string &m_uri)
     {
-        if (uri == "*")
+        if (m_uri == "*")
         { 
             return true;
         }
-        std::string htp = uri.substr(0, 7);
-        std::string pocinje = uri.substr(0, 1);
-        if (htp == "http://")
+        std::string uri_beg = m_uri.substr(0, 7);
+        std::string uri_first_ch = m_uri.substr(0, 1);
+        if (uri_beg == "http://")
         {
                 return true;
         }
-        if (pocinje == "/"){
+        if (uri_first_ch == "/"){
             return true;
         }
+        
         return false;
         
     }
-    bool Request::validateVersion(std::string& ver_token){
-        if (ver_token != "HTTP/0.9" && ver_token!= "HTTP/1.0" && ver_token != "HTTP/1.1" && ver_token != "HTTP/2.0")
-            return false;
-        return true;
+    bool Request::validateVersion(std::string& version){
+        if(version == "HTTP/0.9"){
+            return true;
+        }
+        if(version!= "HTTP/1.0"){
+            return true;
+        }
+        if(version != "HTTP/1.1"){
+            return true;
+        }
+        if(version != "HTTP/2.0"){
+            return true;
+        }
+            
+        return false;
     }
     
 
@@ -100,4 +113,4 @@ namespace HTTP{
             return false;
     }
 
-}//namespace Namespace
+}//namespace HTTP

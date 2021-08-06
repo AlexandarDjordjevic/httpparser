@@ -1,7 +1,7 @@
 /**
  * @author your name (you@domain.com)
  * @brief 
- * @version 0.1
+ * @m_version 0.1
  * @date 2021-08-03
  * 
  * @copyright Copyright (c) 2021
@@ -12,7 +12,7 @@
 #include <string.h>
 #include <vector>
 #include <map>
-
+#include <regex>
 
 namespace HTTP
 {
@@ -41,20 +41,7 @@ namespace HTTP
         {"PATCH",Method::PATCH},
         {"COUNT",Method::COUNT}
     };
-    // std::string getStringFromEnum(Method m)
-    // {
-    //     switch (m)
-    //     {
 
-    //     case GET:
-    //         // code block
-    //         break;
-    //     case y:
-    //         // code block
-    //         break;
-    //     default:
-    //     }
-    // }
     class Request{
     private:
     
@@ -76,25 +63,20 @@ namespace HTTP
         Request(Request&&) = delete;
         Request& operator=(Request &&) = delete;
 
-        bool validateRequestStartLine(const std::string& message);
+        bool parseStartLine(const std::string& message);
         bool validateMethod(const std::string& message);
         bool validateURI(std::string& message);
-        bool validateVersion(std::string& ver_token);
-        Method getMethod(){
-            return method;
-        }
-        
+        bool validateVersion(std::string& version);
+
+        Method getMethod();
        
     private:
         bool endsWith(const std::string &mainStr, const std::string &toMatch);
-        
-    
     private:
         const std::string CRLF = "\r\n";
-        Method method;
-        std::string uri;
-        std::string version;
-        std::map<std::string , std::string> header_filds;
+        Method m_method;
+        std::string m_uri;
+        std::string m_version;
     };
 
 
