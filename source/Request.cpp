@@ -2,7 +2,8 @@
 
 namespace HTTP{
 
-    std::vector<std::string> splitString(const std::string& s, std::string rgx_str ){ 
+    std::vector<std::string> splitString(const std::string& s, std::string rgx_str )
+    { 
         std::vector<std::string> tokens;
         std::regex pattern (rgx_str);
         std::sregex_token_iterator iter(s.begin(),s.end(), pattern,-1);
@@ -26,7 +27,8 @@ namespace HTTP{
         return m_method;
     }
 
-    Method Request::validateMethod(const std::string& message){
+    Method Request::validateMethod(const std::string& message)
+    {
         auto it = table.find(message);   
         if (it != table.end())
         {
@@ -35,39 +37,38 @@ namespace HTTP{
         return m_method; 
     }
 
-    // bool Request::parseStartLine(const std::string& message)
-    // {
-    //     if (message == ""){
-    //         return false;
-    //     }
-    //     if (endsWith(message, CRLF) == false){
-    //         return false;
-    //     }
-    //     std::vector<std::string> tokens = splitString(message);
-    //     std::string methodtoken = tokens[0];
-    //     std::string URI = tokens[1];
-    //     std::string version = tokens[2];
+    std::string Request::validateURI(const std::string& message)
+    {
+        URI::Uri c;
+        c.from_string(message);
+    }
 
-    //     validateMethod(methodtoken);
-    //     validateVersion(version);
-    //     //fromString(URI);
+    std::string Request::parseStartLine(const std::string& message)
+    {
+        if (message == ""){
+            throw ("Faild parsing StartLine, message is empty!");
+        }
+        if (endsWith(message, CRLF) == false){
+            throw ("Faild parsing StartLine, message do not end with CRLF");
+        }
+        std::vector<std::string> tokens = splitString(message);
+
+        std::string methodtoken = tokens[0];
+        std::string URI = tokens[1];
+        std::string version = tokens[2];
+
+        validateMethod(methodtoken);
+        validateVersion(version);
+        validateURI(URI);     
         
-    //     if(validateURI(URI) == false) {
-    //         return false;
-    //     }
-    //     m_uri = URI;
-    //     if (validateVersion(version) == false){
-    //         return false;
-    //     }
-    //     m_version = version;
-    //     return true;
-    // }
+    }
     
-    Version Request::validateVersion(const std::string& message){
-        auto it = tableVersions.find(message);   
-        if (it != tableVersions.end())
+    Version Request::validateVersion(const std::string& message)
+    {
+        auto ver = tableVersions.find(message);   
+        if (ver != tableVersions.end())
         {
-            m_version = it->second;
+            m_version = ver->second;
         }
         return m_version; 
     }    

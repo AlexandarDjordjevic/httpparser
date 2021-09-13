@@ -82,3 +82,9 @@
 // //     auto result= parser.validateMethod("PUT");
 // //     ASSERT_EQ(HTTP::Method::PUT,parser.getMethod());
 // // }
+
+// TEST(HTTP_Request_test, validateStartLine_full){
+//     HTTP::Request parser;
+//     auto result= parser.parseStartLine("GET /pub/WWW/TheProject.html HTTP/1.1");
+//     ASSERT_EQ(result);
+// }

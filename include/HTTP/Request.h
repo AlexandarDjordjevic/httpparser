@@ -1,8 +1,7 @@
 /**
- * @author your name (you@domain.com)
+ * @author krrle
  * @brief 
  * @m_version 0.1
- * @date 2021-08-03
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -14,6 +13,7 @@
 #include <map>
 #include <regex>
 #include <../../Uri/include/URI/Uri.h>
+using namespace::URI;
 
 namespace HTTP
 {   
@@ -47,12 +47,11 @@ namespace HTTP
      * @brief Enumeration for HTTP versions
      * 
      */
-    enum class Version {
-        // HTTP/0.9 = 0,
-        // HTTP/1.0 = 1,
-        // HTTP/1.1 = 2,
-        // HTTP/2.0 = 3,
-        
+    enum Version {
+        HTTP09 = 0,
+        HTTP10 = 1,
+        HTTP11 = 2,
+        HTTP20 = 3,
     };
      
     /**
@@ -102,11 +101,11 @@ namespace HTTP
      * @brief Maping HTTP versions
      * 
      */
-    static std::map<std::string, int> const tableVersions = {
-        {"HTTP/0.9", 0},
-        {"HTTP/1.0", 1},
-        {"HTTP/1.1", 2},
-        {"HTTP/2.0", 3}
+    static std::map<std::string, Version> const tableVersions = {
+        {"HTTP/0.9", Version::HTTP09},
+        {"HTTP/1.0", Version::HTTP10},
+        {"HTTP/1.1", Version::HTTP11},
+        {"HTTP/2.0", Version::HTTP20}
     };
 
     class Request{
@@ -156,7 +155,7 @@ namespace HTTP
          * @return true 
          * @return false 
          */
-        bool parseStartLine(const std::string& message);
+        std::string parseStartLine(const std::string& message);
 
         /**
          * @brief Validating Http Method
@@ -167,7 +166,7 @@ namespace HTTP
         Method validateMethod(const std::string& message);
 
         /**
-         * @brief Validating Uri using function FromString() from URI.h
+         * @brief Validating Uri using function from_string() from Uri.h
          * 
          * @param message 
          * @return std::string 
