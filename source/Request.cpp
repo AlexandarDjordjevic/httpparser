@@ -26,83 +26,51 @@ namespace HTTP{
         return m_method;
     }
 
-    bool Request::validateMethod(const std::string& message){
-        auto it = table.find(message);
-        
-
+    Method Request::validateMethod(const std::string& message){
+        auto it = table.find(message);   
         if (it != table.end())
         {
             m_method = it->second;
-            return true;
-            
         }
-        return false;
-        
+        return m_method; 
     }
 
-    bool Request::parseStartLine(const std::string &message)
-    {
-        if (message == ""){
-            return false;
-        }
-        if (endsWith(message, CRLF) == false){
-            return false;
-        }
-        std::vector<std::string> tokens = splitString(message);
-        std::string methodtoken = tokens[0];
-        std::string URI = tokens[1];
-        std::string version = tokens[2];
+    // bool Request::parseStartLine(const std::string& message)
+    // {
+    //     if (message == ""){
+    //         return false;
+    //     }
+    //     if (endsWith(message, CRLF) == false){
+    //         return false;
+    //     }
+    //     std::vector<std::string> tokens = splitString(message);
+    //     std::string methodtoken = tokens[0];
+    //     std::string URI = tokens[1];
+    //     std::string version = tokens[2];
 
-        if (validateMethod(methodtoken) == false){
-            return false;
-        }
+    //     validateMethod(methodtoken);
+    //     validateVersion(version);
+    //     //fromString(URI);
         
-        if(validateURI(URI) == false) {
-            return false;
-        }
-        m_uri = URI;
-        if (validateVersion(version) == false){
-            return false;
-        }
-        m_version = version;
-        return true;
-    }
-    bool Request::validateURI(std::string &m_uri)
-    {
-        if (m_uri == "*")
-        { 
-            return true;
-        }
-        std::string uri_beg = m_uri.substr(0, 7);
-        std::string uri_first_ch = m_uri.substr(0, 1);
-        if (uri_beg == "http://")
-        {
-                return true;
-        }
-        if (uri_first_ch == "/"){
-            return true;
-        }
-        
-        return false;
-        
-    }
-    bool Request::validateVersion(std::string& version){
-        if(version == "HTTP/0.9"){
-            return true;
-        }
-        if(version!= "HTTP/1.0"){
-            return true;
-        }
-        if(version != "HTTP/1.1"){
-            return true;
-        }
-        if(version != "HTTP/2.0"){
-            return true;
-        }
-            
-        return false;
-    }
+    //     if(validateURI(URI) == false) {
+    //         return false;
+    //     }
+    //     m_uri = URI;
+    //     if (validateVersion(version) == false){
+    //         return false;
+    //     }
+    //     m_version = version;
+    //     return true;
+    // }
     
+    Version Request::validateVersion(const std::string& message){
+        auto it = tableVersions.find(message);   
+        if (it != tableVersions.end())
+        {
+            m_version = it->second;
+        }
+        return m_version; 
+    }    
 
     bool Request::endsWith(const std::string &mainStr, const std::string &toMatch)
     {
