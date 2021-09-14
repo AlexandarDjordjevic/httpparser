@@ -59,25 +59,25 @@ namespace HTTP
      * 
      */
     enum class Request_Header{
-    //     Accept,
-    //     AcceptCharset,
-    //     Accept-Encoding,
-    //     Accept-Language,
-    //     Authorization,
-    //     Except,
-    //     From,
-    //     Host,
-    //     If-Match,
-    //     If-Modified-Since,
-    //     If-None-Match,
-    //     If-Range,
-    //     If-Unmodified-Since,
-    //     Max-Forwards,
-    //     Proxy-Authorization,
-    //     Range,
-    //     Referer,
-    //     TE,
-    //     User-Agent
+        Accept,
+        AcceptCharset,
+        AcceptEncoding,
+        AcceptLanguage,
+        Authorization,
+        Except,
+        From,
+        Host,
+        IfMatch,
+        IfModifiedSince,
+        IfNoneMatch,
+        IfRange,
+        IfUnmodifiedSince,
+        MaxForwards,
+        ProxyAuthorization,
+        Range,
+        Referer,
+        TE,
+        UserAgent
     };
 
     /**
@@ -95,6 +95,28 @@ namespace HTTP
         {"TRACE",Method::TRACE},
         {"PATCH",Method::PATCH},
         {"COUNT",Method::COUNT}
+    };
+
+    static std::map<std::string, Request_Header> const tableHeader ={
+        {"Accept", Request_Header::Accept},
+        {"Accept-Charset", Request_Header::AcceptCharset},
+        {"Accept-Encoding", Request_Header::AcceptEncoding},
+        {"Accept-Language", Request_Header::AcceptLanguage},
+        {"Authorization", Request_Header::Authorization},
+        {"Except",Request_Header::Except},
+        {"From",Request_Header::From},
+        {"Host",Request_Header::Host},
+        {"If-Match",Request_Header::IfMatch},
+        {"If-Modified-Since",Request_Header::IfModifiedSince},
+        {"If-None-Match",Request_Header::IfNoneMatch},
+        {"If-Range",Request_Header::IfRange},
+        {"If-Unmodified-Since",Request_Header::IfUnmodifiedSince},
+        {"Max-Forwards",Request_Header::MaxForwards},
+        {"Proxy-Authorization",Request_Header::ProxyAuthorization},
+        {"Range", Request_Header::Range},
+        {"Referer",Request_Header::Referer},
+        {"TE",Request_Header::TE},
+        {"User-Agent",Request_Header::UserAgent}
     };
 
     /**
