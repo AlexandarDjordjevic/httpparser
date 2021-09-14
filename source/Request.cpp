@@ -43,10 +43,11 @@ namespace HTTP{
        if(m_uri.get_scheme() != "http")
        {
            if(m_uri.get_scheme() != "https"){
-               return false;
+                return false;   
            }
 
-       } 
+       }
+       
        return true;
     }
 
