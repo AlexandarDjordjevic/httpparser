@@ -97,6 +97,10 @@ namespace HTTP
         {"COUNT",Method::COUNT}
     };
 
+    /**
+     * @brief Maping string with enumeration Request-Header
+     * 
+     */
     static std::map<std::string, Request_Header> const tableHeader ={
         {"Accept", Request_Header::Accept},
         {"Accept-Charset", Request_Header::AcceptCharset},
