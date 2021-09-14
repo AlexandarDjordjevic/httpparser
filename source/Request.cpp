@@ -51,13 +51,13 @@ namespace HTTP{
        return true;
     }
 
-    std::string Request::parse_start_line(const std::string& message)
+    bool Request::parse_start_line(const std::string& message)
     {
         if (message == ""){
-            throw ("Faild parsing StartLine, message is empty!");
+            return false;
         }
         if (ends_with(message, CRLF) == false){
-            throw ("Faild parsing StartLine, message do not end with CRLF");
+           return false;
         }
         std::vector<std::string> tokens = split_string(message);
 
@@ -68,8 +68,19 @@ namespace HTTP{
         validate_method(methodtoken);
         validate_version(version);
         validate_uri(URI);     
-        return "";
+        return true;
     }
+
+    Request_Header Request::validate_header(const std::string& message)
+    {
+       auto head=tableHeader.find(message);
+       if(head!=tableHeader.end())
+       {
+           m_header= head->second;
+       } 
+       return m_header;
+    }
+
     
     Version Request::validate_version(const std::string& message)
     {
