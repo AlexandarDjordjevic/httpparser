@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(this httpproject)
+set(this http)
 
 project(${this})
 
@@ -11,22 +11,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(source
         source/Request.cpp
     )
-include_directories(${this} include)
 
-# Locate GTest
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+add_subdirectory(external/Uri)
 
-add_library(${this} ${source})
+add_library(${this} STATIC ${source})
 
-# Link runTests with what we want to test and the GTest and pthread library
-target_link_libraries(${this} 
-                        ${GTEST_BOTH_LIBRARIES}
-                        pthread
-                        )
+target_include_directories(${this} PUBLIC include)
 
-add_test(
-    NAME ${this}
-    COMMAND ${this}
-)
-add_subdirectory(tests)
+target_link_libraries(${this} uri)
