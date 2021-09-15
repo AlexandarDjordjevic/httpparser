@@ -14,10 +14,10 @@ set(source
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-add_executable(gtest ${source})
+add_executable(${this} ${source})
 
 # Link runTests with what we want to test and the GTest and pthread library
-target_link_libraries(gtest 
+target_link_libraries(${this}
                         ${GTEST_BOTH_LIBRARIES}
                         http
                         pthread
