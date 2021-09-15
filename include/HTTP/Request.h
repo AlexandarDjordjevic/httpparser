@@ -9,7 +9,7 @@
 #pragma once
 #include <iostream>
 #include <string.h>
-#include <vector>
+#include <utility>
 #include <map>
 #include <regex>
 #include <URI/Uri.h>
@@ -17,13 +17,12 @@
 namespace HTTP
 {   
     /**
-     * @brief Spliting string in pieces
+     * @brief String tokenize
      * 
      * @param s 
-     * @param rgx_str 
-     * @return std::vector<std::string> 
+     * @return std::pair<std::string, std::string> 
      */
-    std::vector<std::string> split_string(const std::string& s , std::string rgx_str = "\\s+");
+    std::pair<std::string, std::string> tokenize(const std::string& s);
 
     /**
      * @brief Enumeration for HTTP methods
@@ -132,14 +131,33 @@ namespace HTTP
         { "HTTP/1.1", Version::HTTP11 },
         { "HTTP/2.0", Version::HTTP20 }
     };
-    static std::string empty_string{""};
-    static std::string asterisk {"*"};
-    static std::string http{"http"};
-    static std::string https{"https"};
+
     class Request{
        
     private:
-        
+        /**
+         * @brief empty const string 
+         * 
+         */
+        const std::string empty_string{""};
+
+        /**
+         * @brief asterisk const string for checking scheme of uri
+         * 
+         */
+        const std::string asterisk {"*"};
+
+        /**
+         * @brief http const string for checking scheme of uri
+         * 
+         */
+        const std::string http{"http"};
+
+        /**
+         * @brief https const string for checking scheme of uri
+         * 
+         */
+        const std::string https{"https"};
         /**
          * @brief HTTP method atribute
          * 
@@ -190,15 +208,19 @@ namespace HTTP
          * @return true 
          * @return false 
          */
-        bool parse_start_line(const std::string& message);
+        bool parse_request_line(const std::string& message);
+
+
+    private:
 
         /**
-         * @brief Validating Http Method
+         * @brief Validating Http request Method
          * 
          * @param message 
-         * @return Method 
+         * @return true 
+         * @return false 
          */
-        Method validate_method(const std::string& message);
+        bool validate_method(const std::string& message);
 
         /**
          * @brief Validating Uri using function from_string() from Uri.h
@@ -212,9 +234,10 @@ namespace HTTP
          * @brief Validating Http version
          * 
          * @param message 
-         * @return std::string 
+         * @return true 
+         * @return false 
          */
-        Version validate_version(const std::string& message);
+        bool validate_version(const std::string& message);
 
         /**
          * @brief Validating Request_Header
@@ -225,7 +248,7 @@ namespace HTTP
         Request_Header validate_header(const std::string& message);
 
         /**
-         * @brief Mathcing "mainStr" to "toMatch" string and telling if main string ends with "toMatch" string
+         * @brief Mathcing "main_str" to "to_match" string and telling if main string ends with "toMatch" string
          * 
          * @param main_str 
          * @param to_match 
@@ -233,8 +256,6 @@ namespace HTTP
          * @return false 
          */
         bool ends_with(const std::string &main_str, const std::string &to_match);
-
-    private:
 
         /**
         * @brief Get the Method object
@@ -256,14 +277,6 @@ namespace HTTP
          * @return std::string 
          */
         std::string getUri();
-
-        /**
-         * @brief If m_method is methode that allows uri to be asterisk
-         * 
-         * @return true 
-         * @return false 
-         */
-        bool allows_asterisk();
 
     private:
 

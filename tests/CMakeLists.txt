@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
+set(this httpgtests)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
@@ -18,11 +19,11 @@ add_executable(gtest ${source})
 # Link runTests with what we want to test and the GTest and pthread library
 target_link_libraries(gtest 
                         ${GTEST_BOTH_LIBRARIES}
-                        httpproject
+                        http
                         pthread
                         )
 
 add_test(
-    NAME gtest
-    COMMAND gtest
+    NAME ${this}
+    COMMAND ${this}
 )

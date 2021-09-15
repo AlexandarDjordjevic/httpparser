@@ -19,3 +19,5 @@ add_library(${this} STATIC ${source})
 target_include_directories(${this} PUBLIC include)
 
 target_link_libraries(${this} uri)
+
+add_subdirectory(tests)

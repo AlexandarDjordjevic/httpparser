@@ -2,17 +2,15 @@
 
 namespace HTTP{
 
-    std::vector<std::string> split_string(const std::string& s, std::string rgx_str )
+    
+    std::pair<std::string, std::string> tokenize(const std::string& s)
     { 
-        std::vector<std::string> tokens;
-        std::regex pattern (rgx_str);
-        std::sregex_token_iterator iter(s.begin(),s.end(), pattern,-1);
-        std::sregex_token_iterator end;
-        while(iter != end){
-            tokens.push_back(*iter);
-            ++iter;
-        }
-        return tokens;
+        std::string remining_string;
+        std::string token;
+        std::size_t found = s.find(" ");
+        token = s.substr(0, found);
+        remining_string = s.substr(found + 1, s.length());
+        return { token, remining_string };
     }
 
     Request::Request()
@@ -27,21 +25,22 @@ namespace HTTP{
         return m_method;
     }
 
-    Method Request::validate_method(const std::string& message)
+    bool Request::validate_method(const std::string& message)
     {
         auto it = table.find(message);   
         if (it != table.end())
         {
             m_method = it->second;
+            return true;
         }
-        return m_method; 
+        return false; 
     }
 
     bool Request::validate_uri(const std::string& message)
     {
 
         m_uri.from_string(message);
-        
+
         if (m_uri.get_authority() == message)
         {
             if (m_method != Method::CONNECT)
@@ -74,7 +73,7 @@ namespace HTTP{
     
     }
 
-    bool Request::parse_start_line(const std::string& message)
+    bool Request::parse_request_line(const std::string& message)
     {
         if (message == ""){
             return false;
@@ -82,15 +81,21 @@ namespace HTTP{
         if (ends_with(message, CRLF) == false){
            return false;
         }
-        std::vector<std::string> tokens = split_string(message);
+        std::pair<std::string,std::string> message_tokens;
+        message_tokens = tokenize (message);
+        if(validate_method(message_tokens.first) == false){
+            return false;
+        }
 
-        std::string methodtoken = tokens[0];
-        std::string URI = tokens[1];
-        std::string version = tokens[2];
+        message_tokens = tokenize(message_tokens.second);
+        if(validate_version(message_tokens.first)== false){
+            return false;
+        }
 
-        validate_method(methodtoken);
-        validate_version(version);
-        validate_uri(URI);     
+        message_tokens = tokenize(message_tokens.second);
+        if(validate_uri(message_tokens.first)== false){
+            return false;
+        }
         return true;
     }
 
@@ -105,14 +110,15 @@ namespace HTTP{
     }
 
     
-    Version Request::validate_version(const std::string& message)
+    bool Request::validate_version(const std::string& message)
     {
         auto ver = tableVersions.find(message);   
         if (ver != tableVersions.end())
         {
             m_version = ver->second;
+            return true;
         }
-        return m_version; 
+        return false; 
     }    
 
     bool Request::ends_with(const std::string &mainStr, const std::string &toMatch)
@@ -122,13 +128,6 @@ namespace HTTP{
             return true;
         else
             return false;
-    }
-    bool Request::allows_asterisk(){
-        if(m_method == Method::OPTIONS)
-        {
-            return true;
-        }
-        return false; 
     }
 
 }//namespace HTTP
