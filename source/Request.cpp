@@ -39,16 +39,39 @@ namespace HTTP{
 
     bool Request::validate_uri(const std::string& message)
     {
-       m_uri.from_string(message);
-       if(m_uri.get_scheme() != "http")
-       {
-           if(m_uri.get_scheme() != "https"){
-                return false;   
-           }
 
-       }
-       
-       return true;
+        m_uri.from_string(message);
+        
+        if (m_uri.get_authority() == message)
+        {
+            if (m_method != Method::CONNECT)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (m_uri.get_scheme() == empty_string || m_uri.get_scheme() == http || m_uri.get_scheme() == https )
+            {
+                if (m_uri.get_path() == empty_string)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else{
+                return false;
+            }
+            
+        }
+    
     }
 
     std::string Request::parse_start_line(const std::string& message)
@@ -88,6 +111,13 @@ namespace HTTP{
             return true;
         else
             return false;
+    }
+    bool Request::allows_asterisk(){
+        if(m_method == Method::OPTIONS)
+        {
+            return true;
+        }
+        return false; 
     }
 
 }//namespace HTTP

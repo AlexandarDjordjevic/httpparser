@@ -132,10 +132,14 @@ namespace HTTP
         { "HTTP/1.1", Version::HTTP11 },
         { "HTTP/2.0", Version::HTTP20 }
     };
-
+    static std::string empty_string{""};
+    static std::string asterisk {"*"};
+    static std::string http{"http"};
+    static std::string https{"https"};
     class Request{
+       
     private:
-
+        
         /**
          * @brief HTTP method atribute
          * 
@@ -239,6 +243,13 @@ namespace HTTP
          */
         std::string getUri();
 
+        /**
+         * @brief If m_method is methode that allows uri to be asterisk
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool allows_asterisk();
 
     private:
 
