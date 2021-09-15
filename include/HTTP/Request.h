@@ -123,7 +123,7 @@ namespace HTTP
     };
 
     /**
-     * @brief Maping HTTP versions
+     * @brief Maping string with enumeration HTTP-versions
      * 
      */
     static std::map<std::string, Version> const tableVersions = {
@@ -158,6 +158,12 @@ namespace HTTP
          */
         Version m_version;
 
+        /**
+         * @brief HTTP Reuqest Header atribute
+         * 
+         */
+        Request_Header m_header;
+
     public:
 
         /**
@@ -184,7 +190,7 @@ namespace HTTP
          * @return true 
          * @return false 
          */
-        std::string parse_start_line(const std::string& message);
+        bool parse_start_line(const std::string& message);
 
         /**
          * @brief Validating Http Method
@@ -209,6 +215,14 @@ namespace HTTP
          * @return std::string 
          */
         Version validate_version(const std::string& message);
+
+        /**
+         * @brief Validating Request_Header
+         * 
+         * @param message 
+         * @return Request_Header 
+         */
+        Request_Header validate_header(const std::string& message);
 
         /**
          * @brief Mathcing "mainStr" to "toMatch" string and telling if main string ends with "toMatch" string
