@@ -2,17 +2,6 @@
 
 namespace HTTP{
 
-    
-    std::pair<std::string, std::string> tokenize(const std::string& str, const std::string& delimeter)
-    { 
-        std::string remining_string;
-        std::string token;
-        std::size_t found = str.find(delimeter);
-        token = str.substr(0, found);
-        remining_string = str.substr(found + 1, str.length());
-        return { token, remining_string };
-    }
-
     Request::Request()
     {
     }
@@ -31,9 +20,19 @@ namespace HTTP{
         return m_version;
     }
 
-    bool Request::validate_method(const std::string& message)
+    std::pair<std::string, std::string> tokenize(const std::string& str, const std::string& delimeter)
+    { 
+        std::string remining_string;
+        std::string token;
+        std::size_t found = str.find(delimeter);
+        token = str.substr(0, found);
+        remining_string = str.substr(found + 1, str.length());
+        return { token, remining_string };
+    }
+
+    bool Request::validate_method(const std::string& method)
     {
-        auto it = table.find(message);   
+        auto it = table.find(method);   
         if (it != table.end())
         {
             m_method = it->second;
@@ -42,13 +41,11 @@ namespace HTTP{
         return false; 
     }
 
-    bool Request::validate_uri(const std::string& message)
+    bool Request::validate_uri(const std::string& uri)
     {
 
-        m_uri.from_string(message);
-        std::cout<< m_uri.get_path()<<std::endl;
-
-        if (m_uri.get_authority() == message)
+        m_uri.from_string(uri);
+        if (m_uri.get_authority() == uri)
         {
             if (m_method != Method::CONNECT)
             {
@@ -81,39 +78,39 @@ namespace HTTP{
     
     }
 
-    bool Request::parse_request_line(const std::string& message)
+    bool Request::parse_request_line(const std::string& request_line)
     {
-        if (message == empty_string)
+        if (request_line == empty_string)
         {   
             return false;
         }
-        if (ends_with(message, CRLF) == false)
+        if (ends_with(request_line, CRLF) == false)
         {
            return false;
         }
-        std::pair<std::string,std::string> message_tokens;
-        message_tokens = tokenize (message, " ");
-        if(validate_method(message_tokens.first) == false)
+        std::pair<std::string,std::string> request_tokens;
+        request_tokens = HTTP::tokenize(request_line, " ");
+        if(validate_method(request_tokens.first) == false)
         {
             return false;
         }
-        message_tokens = tokenize(message_tokens.second, " ");
-        if(validate_uri(message_tokens.first)== false)
+        request_tokens = HTTP::tokenize(request_tokens.second, " ");
+        if(validate_uri(request_tokens.first)== false)
         {
             return false;
         }
-        message_tokens = tokenize(message_tokens.second, CRLF);
-        if(validate_version(message_tokens.first)== false)
+        request_tokens = HTTP::tokenize(request_tokens.second, CRLF);
+        if(validate_version(request_tokens.first)== false)
         {
             return false;
         }
         return true;
     }
     
-    bool Request::validate_version(const std::string& message)
+    bool Request::validate_version(const std::string& version)
     {
-        auto ver = tableVersions.find(message);   
-        if (ver != tableVersions.end())
+        auto ver = table_versions.find(version);   
+        if (ver != table_versions.end())
         {
             m_version = ver->second;
             return true;
@@ -121,10 +118,10 @@ namespace HTTP{
         return false; 
     }    
 
-    bool Request::ends_with(const std::string &mainStr, const std::string &toMatch)
+    bool Request::ends_with(const std::string &main_str, const std::string &to_match)
     {
-        if (mainStr.size() >= toMatch.size() &&
-            mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0)
+        if (main_str.size() >= to_match.size() &&
+            main_str.compare(main_str.size() - to_match.size(), to_match.size(), to_match) == 0)
             {
                 return true;
             }
