@@ -129,14 +129,14 @@ TEST(HTTPParser, put_request_with_abs_uri_http09){
 
 TEST(HTTPParser, fetch_request_with_abs_path_http10){
     HTTP::Request parser;
-    std::string test_http_request= "FETCH /pub/WWW/TheProject.html HTTP/1.0\r\n";
+    std::string test_http_request= "PATCH /pub/WWW/TheProject.html HTTP/1.0\r\n";
     auto result = parser.parse_request_line(test_http_request);
     ASSERT_TRUE(result);
 };
 
 TEST(HTTPParser, fetch_request_with_abs_uri_http10){
     HTTP::Request parser;
-    std::string test_http_request= "FETCH https://www.google.com/jfejs/cdscs/cdcs/?csdsdc#cdsmc HTTP/1.0\r\n";
+    std::string test_http_request= "PATCH https://www.google.com/jfejs/cdscs/cdcs/?csdsdc#cdsmc HTTP/1.0\r\n";
     auto result = parser.parse_request_line(test_http_request);
     ASSERT_TRUE(result);
 };
