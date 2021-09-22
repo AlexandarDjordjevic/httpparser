@@ -44,10 +44,10 @@ enum class Version {
     HTTP20 = 3,
 };
  /**
-     * @brief Enumeration for Request-Header
+     * @brief Enumeration for Request-fields
      * 
      */
-enum class Request_Header{
+enum class Field_Key_Word{
     Accept,
     AcceptCharset,
     AcceptEncoding,
@@ -69,35 +69,39 @@ enum class Request_Header{
     UserAgent
 };
 
+/**
+ * @brief Structur for filds in fields consist of key word for field and value for that field
+ * 
+ */
 struct Header_Field{
 
-    Request_Header field;
+    Field_Key_Word field;
     std::string f_value;
 };
 /**
-     * @brief Maping string with enumeration Request-Header
+     * @brief Maping string with enumeration Request-fields
      * 
      */
-static std::map<std::string, Request_Header> const header_table ={
-    {"Accept:",              Request_Header::Accept              },
-    {"Accept-Charset:",      Request_Header::AcceptCharset       },
-    {"Accept-Encoding:",     Request_Header::AcceptEncoding      },
-    {"Accept-Language:",     Request_Header::AcceptLanguage      },
-    {"Authorization:",       Request_Header::Authorization       },
-    {"Except:",              Request_Header::Except              },
-    {"From:",                Request_Header::From                },
-    {"Host:",                Request_Header::Host                },
-    {"If-Match:",            Request_Header::IfMatch             },
-    {"If-Modified-Since:",   Request_Header::IfModifiedSince     },
-    {"If-None-Match:",       Request_Header::IfNoneMatch         },
-    {"If-Range:",            Request_Header::IfRange             },
-    {"If-Unmodified-Since:", Request_Header::IfUnmodifiedSince   },
-    {"Max-Forwards:",        Request_Header::MaxForwards         },
-    {"Proxy-Authorization:", Request_Header::ProxyAuthorization  },
-    {"Range:",               Request_Header::Range               },
-    {"Referer:",             Request_Header::Referer             },
-    {"TE:",                  Request_Header::TE                  },
-    {"User-Agent:",          Request_Header::UserAgent           }
+const std::map<std::string, Field_Key_Word> fields_table = {
+    {"Accept:",              Field_Key_Word::Accept              },
+    {"Accept-Charset:",      Field_Key_Word::AcceptCharset       },
+    {"Accept-Encoding:",     Field_Key_Word::AcceptEncoding      },
+    {"Accept-Language:",     Field_Key_Word::AcceptLanguage      },
+    {"Authorization:",       Field_Key_Word::Authorization       },
+    {"Except:",              Field_Key_Word::Except              },
+    {"From:",                Field_Key_Word::From                },
+    {"Host:",                Field_Key_Word::Host                },
+    {"If-Match:",            Field_Key_Word::IfMatch             },
+    {"If-Modified-Since:",   Field_Key_Word::IfModifiedSince     },
+    {"If-None-Match:",       Field_Key_Word::IfNoneMatch         },
+    {"If-Range:",            Field_Key_Word::IfRange             },
+    {"If-Unmodified-Since:", Field_Key_Word::IfUnmodifiedSince   },
+    {"Max-Forwards:",        Field_Key_Word::MaxForwards         },
+    {"Proxy-Authorization:", Field_Key_Word::ProxyAuthorization  },
+    {"Range:",               Field_Key_Word::Range               },
+    {"Referer:",             Field_Key_Word::Referer             },
+    {"TE:",                  Field_Key_Word::TE                  },
+    {"User-Agent:",          Field_Key_Word::UserAgent           }
 };
 
 /**
@@ -171,7 +175,7 @@ class Request{
         * @return false 
         */
     bool parse_request_line(const std::string& request_line);
-    
+
 private:
 
     /**
@@ -181,15 +185,6 @@ private:
         * @return std::pair<std::string, std::string> 
         */
     std::pair<std::string, std::string> tokenize(const std::string& s, const std::string& delimeter);
-
-    /**
-     * @brief validating Request_Header
-     * 
-     * @param header 
-     * @return true 
-     * @return false 
-     */
-    bool validate_header(const std::string& header);
 
     /**
         * @brief Validating Http request Method
@@ -228,14 +223,14 @@ private:
     bool ends_with(const std::string &main_str, const std::string &to_match);
 
     /**
-     * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_header 
-     * if each header fild is valid, returns true, otherwise returns false
+     * @brief Accepts whole fields from request and parses header_fields, stores each fields_field in vector<fields_Field> m_fields 
+     * if each fields fild is valid, returns true, otherwise returns false
      * 
-     * @param header 
+     * @param fields 
      * @return true 
      * @return false 
      */
-    bool parse_header_filds(const std::string& header);
+    bool parse_header_fields(const std::string& header);
 
 private:
 
@@ -288,7 +283,7 @@ private:
     Version m_version;
 
     /**
-        * @brief Represent header that is constucted of header fields 
+        * @brief Represent fields that is constucted of fields fields 
         * 
         */
     std::vector<Header_Field> m_header;

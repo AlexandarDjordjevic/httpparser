@@ -68,7 +68,7 @@ namespace HTTP{
             return false;
         }
         request_tokens = HTTP::tokenize(request_tokens.second, CRLF + CRLF);
-        if(parse_header_filds(request_tokens.first)==false)
+        if(parse_header_fields(request_tokens.first)==false)
         {
             return false;
             
@@ -113,7 +113,7 @@ namespace HTTP{
     
     }
 
-    bool Request::parse_header_filds(const std::string& header)
+    bool Request::parse_header_fields(const std::string& header)
     {
         std::pair<std::string, std::string> header_tokens;
         header_tokens = HTTP::tokenize(header, "\n");
@@ -121,9 +121,9 @@ namespace HTTP{
         while (header_tokens.first != empty_string)
         {
             std::pair<std::string, std::string> field_tokens = HTTP::tokenize(header_tokens.second," ");
-            
-            auto head = header_table.find(field_tokens.first);
-            if (head != header_table.end())
+
+            auto head = fields_table.find(field_tokens.first);
+            if (head != fields_table.end())
             {
                 Header_Field h_field;
                 h_field.field = head->second;
