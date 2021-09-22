@@ -44,7 +44,7 @@ enum class Version {
     HTTP20 = 3,
 };
  /**
-     * @brief Enumeration for Request-fields
+     * @brief Enumeration for Header-fields
      * 
      */
 enum class Field_Key_Word{
@@ -79,7 +79,7 @@ struct Header_Field{
     std::string f_value;
 };
 /**
-     * @brief Maping string with enumeration Request-fields
+     * @brief Maping string with enumeration Header-fields
      * 
      */
 const std::map<std::string, Field_Key_Word> fields_table = {
@@ -223,8 +223,8 @@ private:
     bool ends_with(const std::string &main_str, const std::string &to_match);
 
     /**
-     * @brief Accepts whole fields from request and parses header_fields, stores each fields_field in vector<fields_Field> m_fields 
-     * if each fields fild is valid, returns true, otherwise returns false
+     * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_fields
+     * if each header fild is valid, returns true, otherwise returns false
      * 
      * @param fields 
      * @return true 
@@ -283,7 +283,7 @@ private:
     Version m_version;
 
     /**
-        * @brief Represent fields that is constucted of fields fields 
+        * @brief Represent header that is constucted of fields fields 
         * 
         */
     std::vector<Header_Field> m_header;
