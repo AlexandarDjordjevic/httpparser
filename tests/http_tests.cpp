@@ -154,3 +154,22 @@ TEST(HTTPParser, put_request_with_abs_path_invalid_version){
     auto result = parser.parse_request_line(test_http_request);
     ASSERT_FALSE(result);
 };
+
+TEST(HTTPParser, post_request_with_header){
+    HTTP::Request parser;
+    std::string test_http_request= "POST /test/demo_form.php HTTP/1.1\r\n\
+                                    Host: w3schools.com\r\n\r\n";
+    auto result = parser.parse_request_line(test_http_request);
+    ASSERT_TRUE(result);
+};
+
+TEST(HTTPParser, get_request_with_header){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\n\
+                                    Host: guru99.com\n\
+                                    User-Agent:Mozilla/5.0\n\
+                                    Accept-Encoding:gzip, deflate\n\
+                                    Accept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.parse_request_line(test_http_request);
+    ASSERT_TRUE(result);
+};

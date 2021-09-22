@@ -41,43 +41,6 @@ namespace HTTP{
         return false; 
     }
 
-    bool Request::validate_uri(const std::string& uri)
-    {
-
-        m_uri.from_string(uri);
-        if (m_uri.get_authority() == uri)
-        {
-            if (m_method != Method::CONNECT)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            if (m_uri.get_scheme() != empty_string && m_uri.get_scheme() != http && m_uri.get_scheme() != https )
-            {
-                return false;
-            }
-            else
-            {
-                if (m_uri.get_path() == empty_string)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }    
-            
-        }
-    
-    }
-
     bool Request::parse_request_line(const std::string& request_line)
     {
         if (request_line == empty_string)
@@ -103,6 +66,12 @@ namespace HTTP{
         if(validate_version(request_tokens.first)== false)
         {
             return false;
+        }
+        request_tokens = HTTP::tokenize(request_tokens.second, CRLF + CRLF);
+        if(parse_header_filds(request_tokens.first)==false)
+        {
+            return false;
+            
         }
         return true;
     }
@@ -130,6 +99,47 @@ namespace HTTP{
         {
             return false;
         }
+    }
+
+    bool Request::validate_uri(const std::string& uri){
+
+        m_uri.from_string(uri);
+        bool ret_val = (m_uri.get_scheme().empty())? (m_uri.get_path().empty())? (m_uri.get_authority().empty())? false : true  
+                                                                                : true 
+                                                    :(m_uri.get_scheme() == http || m_uri.get_scheme() == https)? (m_uri.get_path().empty())? false
+                                                                                                                                            : true 
+                                                                                                                : false;
+        return ret_val;
+    
+    }
+
+    bool Request::parse_header_filds(const std::string& header)
+    {
+        std::pair<std::string, std::string> header_tokens;
+        header_tokens = HTTP::tokenize(header, "\n");
+
+        while (header_tokens.first != empty_string)
+        {
+            std::pair<std::string, std::string> field_tokens = HTTP::tokenize(header_tokens.second," ");
+            
+            auto head = header_table.find(field_tokens.first);
+            if (head != header_table.end())
+            {
+                Header_Field h_field;
+                h_field.field = head->second;
+                h_field.f_value = field_tokens.second;
+                m_header.push_back(h_field);
+                
+            }
+            else
+            {
+                return false;
+            }
+
+            header_tokens = HTTP::tokenize(header, " ");
+        }
+     
+        return true;
     }
 
 }//namespace HTTP
