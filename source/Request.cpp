@@ -66,9 +66,8 @@ namespace HTTP{
 
     bool Request::is_authority_uri(const std::string& uri)
     {
-        if(true)
-        {
-            return (m_uri.get_path() == empty_string);
+        if(std::regex_match( uri.begin(), uri.end(), std::regex(R"([a-zA-Z0-9+:\_\.@]*)"))){ 
+           return true; 
         }
         return false;
     }
@@ -84,7 +83,7 @@ namespace HTTP{
     }
     bool Request::validate_authority_uri(const std::string& uri)
     {
-        if(std::regex_match( uri.begin(), uri.end(), std::regex(R"([a-zA-Z0-9+:\_\.@]*)"))){ 
+        if(m_method == Method::CONNECT){ 
            return true; 
         }
         return false;
