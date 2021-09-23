@@ -72,15 +72,7 @@ namespace HTTP{
         return false;
     }
 
-    bool Request::validate_absolute_uri(const std::string& uri)
-    {
-        return true;
-    }
     
-    bool Request::validate_absolute_path(const std::string& uri)
-    {
-        return true;
-    }
     bool Request::validate_authority_uri(const std::string& uri)
     {
         if(m_method == Method::CONNECT){ 
@@ -98,16 +90,14 @@ namespace HTTP{
         }
 
         m_uri.from_string(uri);
-
         if(is_absolute_uri() == true)
         {
-            return validate_absolute_uri(uri);
+            return true;
         }
         if(is_absolute_path() == true)
         {
-            return validate_absolute_path(uri);
+            return true;
         }
-        
         if(is_authority_uri(uri) == true )
         {
             return validate_authority_uri(uri);

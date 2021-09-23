@@ -183,24 +183,6 @@ namespace HTTP
         bool validate_aterisk_uri();
 
         /**
-         * @brief Validate conditions of absolute uri 
-         * 
-         * @param uri 
-         * @return true 
-         * @return false 
-         */
-        bool validate_absolute_uri(const std::string& uri);
-
-        /**
-         * @brief Validate conditions of absolute path uri 
-         * 
-         * @param uri 
-         * @return true 
-         * @return false 
-         */
-        bool validate_absolute_path(const std::string& uri);
-
-        /**
          * @brief Validate conditions of uri as authority 
          * 
          * @param uri 
@@ -231,9 +213,9 @@ namespace HTTP
     private:
 
         /**
-        * @brief Defining CRLF
-        * 
-        */
+         * @brief Defining CRLF
+         * 
+         */
         const std::string CRLF = "\r\n";
 
         /**
