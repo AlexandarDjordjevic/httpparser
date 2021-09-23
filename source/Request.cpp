@@ -20,14 +20,10 @@ namespace HTTP{
         return m_version;
     }
 
-    std::pair<std::string, std::string> tokenize(const std::string& str, const std::string& delimeter)
+    std::pair<std::string, std::string> tokenize(const std::string& text, const std::string& delimeter)
     { 
-        std::string remining_string;
-        std::string token;
-        std::size_t found = str.find(delimeter);
-        token = str.substr(0, found);
-        remining_string = str.substr(found + 1, str.length());
-        return { token, remining_string };
+        std::size_t found = text.find(delimeter);
+        return { text.substr(0, found), text.substr(found + 1, text.length()) };
     }
 
     bool Request::validate_method(const std::string& method)
@@ -41,40 +37,83 @@ namespace HTTP{
         return false; 
     }
 
+    bool Request::validate_aterisk_uri()
+    {
+        if(m_method == Method::OPTIONS)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool Request::is_absolute_uri()
+    {
+        if(m_uri.get_scheme() == http || m_uri.get_scheme() == https )
+        {
+            return (m_uri.get_path() != empty_string);
+        }
+        return false;
+    }
+
+    bool Request::is_absolute_path()
+    {
+        if(m_uri.get_scheme() == empty_string)
+        {
+            return (m_uri.get_path() != empty_string);
+        }
+        return false;
+    }
+
+    bool Request::is_authority_uri(const std::string& uri)
+    {
+        if(true)
+        {
+            return (m_uri.get_path() == empty_string);
+        }
+        return false;
+    }
+
+    bool Request::validate_absolute_uri(const std::string& uri)
+    {
+        return true;
+    }
+    
+    bool Request::validate_absolute_path(const std::string& uri)
+    {
+        return true;
+    }
+    bool Request::validate_authority_uri(const std::string& uri)
+    {
+        if(std::regex_match( uri.begin(), uri.end(), std::regex(R"([a-zA-Z0-9+:\_\.@]*)"))){ 
+           return true; 
+        }
+        return false;
+    }
+
     bool Request::validate_uri(const std::string& uri)
     {
 
+        if(uri == asterisk)
+        {
+            return validate_aterisk_uri();
+        }
+
         m_uri.from_string(uri);
-        if (m_uri.get_authority() == uri)
+
+        if(is_absolute_uri() == true)
         {
-            if (m_method != Method::CONNECT)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return validate_absolute_uri(uri);
         }
-        else
+        if(is_absolute_path() == true)
         {
-            if (m_uri.get_scheme() != empty_string && m_uri.get_scheme() != http && m_uri.get_scheme() != https )
-            {
-                return false;
-            }
-            else
-            {
-                if (m_uri.get_path() == empty_string)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }    
-            
+            return validate_absolute_path(uri);
         }
+        
+        if(is_authority_uri(uri) == true )
+        {
+            return validate_authority_uri(uri);
+        }
+        return false;
     
     }
 
