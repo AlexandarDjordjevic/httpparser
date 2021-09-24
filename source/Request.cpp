@@ -48,18 +48,18 @@ namespace HTTP{
 
     bool Request::is_absolute_uri()
     {
-        if(m_uri.get_scheme() == http || m_uri.get_scheme() == https )
+        if(m_uri_parser.get_scheme() == http || m_uri_parser.get_scheme() == https )
         {
-            return (m_uri.get_path() != empty_string);
+            return (m_uri_parser.get_path().empty() == false);
         }
         return false;
     }
 
     bool Request::is_absolute_path()
     {
-        if(m_uri.get_scheme() == empty_string)
+        if(m_uri_parser.get_scheme().empty() == true)
         {
-            return (m_uri.get_path() != empty_string);
+            return (m_uri_parser.get_path().empty() == false);
         }
         return false;
     }
@@ -73,7 +73,7 @@ namespace HTTP{
     }
 
     
-    bool Request::validate_authority_uri(const std::string& uri)
+    bool Request::validate_authority_uri()
     {
         if(m_method == Method::CONNECT){ 
            return true; 
@@ -83,13 +83,13 @@ namespace HTTP{
 
     bool Request::validate_uri(const std::string& uri)
     {
-
+        m_uri=uri;
         if(uri == asterisk)
         {
             return validate_aterisk_uri();
         }
 
-        m_uri.from_string(uri);
+        m_uri_parser.from_string(uri);
         if(is_absolute_uri() == true)
         {
             return true;
@@ -98,17 +98,19 @@ namespace HTTP{
         {
             return true;
         }
+
         if(is_authority_uri(uri) == true )
         {
-            return validate_authority_uri(uri);
+            return validate_authority_uri();
         }
+        m_uri="";
         return false;
     
     }
 
     bool Request::parse_request_line(const std::string& request_line)
     {
-        if (request_line == empty_string)
+        if (request_line.empty() == true)
         {   
             return false;
         }
