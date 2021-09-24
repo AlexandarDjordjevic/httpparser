@@ -189,7 +189,7 @@ namespace HTTP
          * @return true 
          * @return false 
          */
-        bool validate_authority_uri(const std::string& uri);
+        bool validate_authority_uri();
 
         /**
          * @brief Validating Http version
@@ -219,12 +219,6 @@ namespace HTTP
         const std::string CRLF = "\r\n";
 
         /**
-         * @brief empty const string 
-         * 
-         */
-        const std::string empty_string{""};
-
-        /**
          * @brief asterisk const string for checking scheme of uri
          * 
          */
@@ -249,10 +243,16 @@ namespace HTTP
         Method m_method;
 
         /**
-         * @brief HTTP uri atribute
+         * @brief Object Uri used for parsing
          * 
          */
-        URI::Uri m_uri;
+        URI::Uri m_uri_parser;
+
+        /**
+         * @brief Stores uri from request
+         * 
+         */
+        std::string m_uri;
 
         /**
          * @brief HTTP version atribute
