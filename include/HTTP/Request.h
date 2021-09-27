@@ -107,42 +107,52 @@ namespace HTTP
         Version get_version();
 
         /**
+         * @brief Get the uri type 
+         * 
+         * @return std::string 
+         */
+        std::string get_uri_type();
+
+        /**
          * @brief Parsing request line
          * 
          * @param request_line 
-         * @brief If request line is valid returns true, otherwise returns false
-         * @return true 
-         * @return false 
+         * @return true if request line is valid, otherwise returns false
          */
         bool parse_request_line(const std::string& request_line);
 
     private:
 
         /**
-         * @brief A sequence of calls to this function split text into tokens, which are strings separated by delimiter string.
+         * @brief Maping enum Uri_type to string 
+         * 
+         * @return const std::string 
+         */
+        const std::string uri_type_to_stirng();
+        
+        /**
+         * @brief A sequence of calls to this function split text into tokens, which are strings separated by delimiter string
          * 
          * @param text 
          * @param delimeter 
-         * @brief firs in pair is token from begining of text to the delimeter and second is the rest of text. 
-         * @return std::pair<std::string, std::string> 
+         * @param position this is position from witch we search delimeter 
+         * @return std::pair<std::string, std::size_t> first is substring from position to delimeter, second is one position after delimeter 
          */
-        std::pair<std::string, std::string> tokenize(const std::string& text, const std::string& delimeter);
+        std::pair<std::string, std::size_t> tokenize(const std::string& text, const std::string& delimeter, std::size_t position);
 
         /**
          * @brief Validating Http request Method
          * 
          * @param method 
-         * @return true 
-         * @return false 
+         * @return true if method is valid, otherwise returns false
          */
         bool validate_method(const std::string& method);
 
         /**
-         * @brief Validating Uri using function from_string() from Uri.h
+         * @brief Validating Uri 
          * 
          * @param uri 
-         * @return true 
-         * @return false 
+         * @return true if uri is valid, otherwise returns false
          */
         bool validate_uri(const std::string& uri);
 
@@ -150,53 +160,39 @@ namespace HTTP
          * @brief Checks if uri of request is an absolute uri
          * 
          * @param uri 
-         * @return true 
-         * @return false 
+         * @return true if uri is absolute, otherwise returns false
          */
-        bool is_absolute_uri();
+        bool validate_absolute_uri(const std::string& uri);
 
         /**
          * @brief Checks if uri of request is an absolute path
          * 
          * @param uri 
-         * @return true 
-         * @return false 
+         * @return true if path is absolute, otherwise returns false
          */
-        bool is_absolute_path();
+        bool validate_absolute_path(const std::string& uri);
 
         /**
          * @brief Checks if uri of request is just authority part of an uri 
          * 
          * @param uri 
-         * @return true 
-         * @return false 
+         * @return true if uri has only authority, otherwise returns false 
          */
-        bool is_authority_uri(const std::string& uri);
+        bool validate_authority_uri(const std::string& uri);
         
         /**
          * @brief Validate conditions of asterisk uri 
          * 
          * @param uri 
-         * @return true 
-         * @return false 
+         * @return true if uri is aterisk, otherwise returns false
          */
-        bool validate_aterisk_uri();
-
-        /**
-         * @brief Validate conditions of uri as authority 
-         * 
-         * @param uri 
-         * @return true 
-         * @return false 
-         */
-        bool validate_authority_uri();
+        bool validate_aterisk_uri(const std::string& uri);
 
         /**
          * @brief Validating Http version
          * 
          * @param version 
-         * @return true 
-         * @return false 
+         * @return true if version is valid, otherwise returns false
          */
         bool validate_version(const std::string& version);
 
@@ -205,8 +201,7 @@ namespace HTTP
          * 
          * @param main_str 
          * @param to_match 
-         * @return true 
-         * @return false 
+         * @return true if main_stirng ends with to_match otherwise returns false
          */
         bool ends_with(const std::string &main_str, const std::string &to_match);
 
@@ -237,23 +232,39 @@ namespace HTTP
         const std::string https{"https"};
 
         /**
+         * @brief Enum for request uri type 
+         * 
+         */
+        enum class Uri_type{
+            asterisk , 
+            absolute_uri,
+            absolute_path,
+            authority
+        };
+
+        /**
+         * @brief Struct that supports different types of uri 
+         * 
+         */
+        struct Request_uri
+        {
+            Uri_type type;
+            URI::Uri uri_obj;
+            std::string uri_str;
+        };
+
+        /**
+         * @brief Struct that represents different types of uri in requests
+         * 
+         */
+        Request_uri m_uri; 
+
+        /**
          * @brief HTTP method atribute
          * 
          */
         Method m_method;
-
-        /**
-         * @brief Object Uri used for parsing
-         * 
-         */
-        URI::Uri m_uri_parser;
-
-        /**
-         * @brief Stores uri from request
-         * 
-         */
-        std::string m_uri;
-
+        
         /**
          * @brief HTTP version atribute
          * 
