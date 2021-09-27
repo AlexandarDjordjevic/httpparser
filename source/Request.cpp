@@ -1,5 +1,4 @@
 #include <HTTP/Request.h>
-#include <iostream>
 
 namespace HTTP{
 
