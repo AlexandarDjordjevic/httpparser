@@ -10,11 +10,12 @@
 #include <utility>
 #include <map>
 #include <regex>
+#include <vector>
 #include <URI/Uri.h>
 
 namespace HTTP
 {   
-
+  
     /**
      * @brief Enumeration for HTTP methods
      * 
@@ -70,9 +71,19 @@ namespace HTTP
         { "HTTP/1.1", Version::HTTP11 },
         { "HTTP/2.0", Version::HTTP20 }
     };
+  
+    /**
+     * @brief Structur for filds in fields consist of key word for field and value for that field
+     * 
+     */
+    struct Header_Field{
+
+        Field_Key_Word field;
+        std::string f_value;
+    };
 
     class Request{
-
+      
     public:
 
         /**
@@ -204,6 +215,16 @@ namespace HTTP
          * @return true if main_stirng ends with to_match otherwise returns false
          */
         bool ends_with(const std::string &main_str, const std::string &to_match);
+        
+        /**
+         * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_fields
+         * if each header fild is valid, returns true, otherwise returns false
+         * 
+         * @param fields 
+         * @return true 
+         * @return false 
+         */
+        bool parse_header_fields(const std::string& header);
 
     private:
 
@@ -270,8 +291,15 @@ namespace HTTP
          * 
          */
         Version m_version;
+        
+        /**
+        * @brief Represent header that is constucted of fields fields 
+        * 
+        */
+        std::vector<Header_Field> m_header;
 
     };
+
 
 }//namespace Namespace
 
