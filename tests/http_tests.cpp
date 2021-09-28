@@ -164,19 +164,15 @@ TEST(HTTPParser, put_request_with_abs_path_invalid_version){
 
 TEST(HTTPParser, post_request_with_header){
     HTTP::Request parser;
-    std::string test_http_request= "POST /test/demo_form.php HTTP/1.1\r\n\
-                                    Host: w3schools.com\r\n\r\n";
-    auto result = parser.parse_request_line(test_http_request);
+    std::string test_http_request= "POST /test/demo_form.php HTTP/1.1\r\nHost: w3schools.com\r\n\r\n";
+    auto result = parser.from_string(test_http_request);
     ASSERT_TRUE(result);
 };
 
 TEST(HTTPParser, get_request_with_header){
     HTTP::Request parser;
-    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\n\
-                                    Host: guru99.com\n\
-                                    User-Agent:Mozilla/5.0\n\
-                                    Accept-Encoding:gzip, deflate\n\
-                                    Accept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
-    auto result = parser.parse_request_line(test_http_request);
-    ASSERT_TRUE(result);
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.from_string(test_http_request);
+    auto k = parser.get_field_value("Host");
+    ASSERT_EQ(k,"guru99.com" );
 };

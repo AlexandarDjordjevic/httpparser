@@ -1,5 +1,5 @@
 #include <HTTP/Request.h>
-
+#include <iostream>
 namespace HTTP{
 
     Request::Request()
@@ -25,10 +25,21 @@ namespace HTTP{
         return uri_type_to_stirng();
     }
 
-    std::pair<std::string, std::size_t> tokenize(const std::string& text, const std::string& delimeter, std::size_t position) 
+    std::string Request::get_field_value(const std::string& key)
+    {
+        auto it = std::find_if(m_header.begin(), m_header.end(), [&key](const Header_field &field){ return field.key == key; });
+        if (it != m_header.end())
+        {
+            auto index = std::distance(m_header.begin(), it);
+            return m_header[index].value;
+        }
+        return "";
+    }
+    
+    std::pair<std::string, std::size_t> Request::tokenize(const std::string& text, const std::string& delimeter, std::size_t position) 
     { 
         std::size_t found = text.find(delimeter, position);
-        return { text.substr(position, found - position), found + 1 };
+        return { text.substr(position, found - position), found + delimeter.length() };
     }
 
     const std::string Request::uri_type_to_stirng()
@@ -105,28 +116,44 @@ namespace HTTP{
 
     bool Request::parse_request_line(const std::string& request_line)
     {
-        if (request_line.empty() == true || ends_with(request_line, CRLF) == false)
+        if (request_line.empty() == true)
         {   
             return false;
         }
 
-        std::pair<std::string, std::size_t > request_tokens;
-        request_tokens = HTTP::tokenize(request_line, " ", 0);
-        if(validate_method(request_tokens.first) == false)
+        std::pair<std::string, std::size_t > req_line_tokens;
+        req_line_tokens = tokenize(request_line, " ", 0);
+        if(validate_method(req_line_tokens.first) == false)
         {
             return false;
         }
-        request_tokens = HTTP::tokenize(request_line, " ", request_tokens.second);
-        if(validate_uri(request_tokens.first)== false)
+        req_line_tokens = tokenize(request_line, " ", req_line_tokens.second);
+        if(validate_uri(req_line_tokens.first) == false)
         {
             return false;
         }
-        request_tokens = HTTP::tokenize(request_line, CRLF,request_tokens.second);
-        if(validate_version(request_tokens.first)== false)
+        req_line_tokens = tokenize(request_line, CRLF,req_line_tokens.second);
+        if(validate_version(req_line_tokens.first) == false)
         {
             return false;
         }
-        request_tokens = HTTP::tokenize(request_tokens.second, CRLF + CRLF);
+        return true;
+    }
+    
+    bool Request::from_string(const std::string& request)
+    {
+        if (request.empty() == true)
+        {   
+            return false;
+        }
+        std::pair<std::string, std::size_t> request_tokens;
+        request_tokens = tokenize(request, CRLF, 0);
+        if(parse_request_line(request_tokens.first) == false)
+        {
+            return false;
+        }
+
+        request_tokens = tokenize(request, CRLF + CRLF,request_tokens.second);
         if(parse_header_fields(request_tokens.first)==false)
         {
             return false;
@@ -134,7 +161,7 @@ namespace HTTP{
         }
         return true;
     }
-    
+
     bool Request::validate_version(const std::string& version)
     {
         auto ver = table_versions.find(version);   
@@ -154,30 +181,22 @@ namespace HTTP{
 
     bool Request::parse_header_fields(const std::string& header)
     {
-        std::pair<std::string, std::string> header_tokens;
-        header_tokens = HTTP::tokenize(header, "\n");
-
-        while (header_tokens.first != empty_string)
+        Header_field h_field;
+        std::pair<std::string, std::size_t> header_tokens;
+        std::pair<std::string, std::size_t> fields_tokens;
+       
+        header_tokens = tokenize(header, "\n", 0);
+        do
         {
-            std::pair<std::string, std::string> field_tokens = HTTP::tokenize(header_tokens.second," ");
+            fields_tokens = tokenize(header_tokens.first, ": ", 0);
+            h_field.key = fields_tokens.first;
+            h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length()-1);
+            m_header.push_back(h_field);
 
-            auto head = fields_table.find(field_tokens.first);
-            if (head != fields_table.end())
-            {
-                Header_Field h_field;
-                h_field.field = head->second;
-                h_field.f_value = field_tokens.second;
-                m_header.push_back(h_field);
-                
-            }
-            else
-            {
-                return false;
-            }
-
-            header_tokens = HTTP::tokenize(header, " ");
+            header_tokens = tokenize(header, "\n", header_tokens.second);
         }
-     
+        while(header_tokens.second != 0);
+        
         return true;
     }
 

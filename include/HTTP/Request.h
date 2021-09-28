@@ -76,10 +76,10 @@ namespace HTTP
      * @brief Structur for filds in fields consist of key word for field and value for that field
      * 
      */
-    struct Header_Field{
+    struct Header_field{
 
-        Field_Key_Word field;
-        std::string f_value;
+        std::string key;
+        std::string value;
     };
 
     class Request{
@@ -125,12 +125,28 @@ namespace HTTP
         std::string get_uri_type();
 
         /**
+         * @brief Get the header field value which key word is key
+         * 
+         * @param key 
+         * @return std::string 
+         */
+        std::string get_field_value(const std::string& key);
+
+        /**
          * @brief Parsing request line
          * 
          * @param request_line 
          * @return true if request line is valid, otherwise returns false
          */
         bool parse_request_line(const std::string& request_line);
+
+        /**
+         * @brief Parsin request into its components and validatin each of them
+         * 
+         * @param request 
+         * @return true if request is valid otherwise returns false
+         */
+        bool from_string(const std::string& request);
 
     private:
 
@@ -217,12 +233,10 @@ namespace HTTP
         bool ends_with(const std::string &main_str, const std::string &to_match);
         
         /**
-         * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_fields
-         * if each header fild is valid, returns true, otherwise returns false
+         * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_field> m_headers
          * 
-         * @param fields 
+         * @param header 
          * @return true 
-         * @return false 
          */
         bool parse_header_fields(const std::string& header);
 
@@ -281,22 +295,22 @@ namespace HTTP
         Request_uri m_uri; 
 
         /**
-         * @brief HTTP method atribute
+         * @brief HTTP method attribute
          * 
          */
         Method m_method;
         
         /**
-         * @brief HTTP version atribute
+         * @brief HTTP version attribute
          * 
          */
         Version m_version;
         
         /**
-        * @brief Represent header that is constucted of fields fields 
+        * @brief Represent header that is constructed of fields fields 
         * 
         */
-        std::vector<Header_Field> m_header;
+        std::vector<Header_field> m_header;
 
     };
 
