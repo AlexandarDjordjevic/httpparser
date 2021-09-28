@@ -106,6 +106,13 @@ TEST(HTTPParser, options_request_with_abs_path_http09){
     ASSERT_TRUE(result);
 };
 
+TEST(HTTPParser, options_request_asterisk_uri){
+    HTTP::Request parser;
+    std::string test_http_request= "OPTIONS * HTTP/1.1\r\n";
+    auto result = parser.parse_request_line(test_http_request);
+    ASSERT_TRUE(result);
+};
+
 TEST(HTTPParser, put_request_with_abs_uri_http20){
     HTTP::Request parser;
     std::string test_http_request= "PUT https://www.google.com/jfejs/cdscs/cdcs/?csdsdc#cdsmc HTTP/2.0\r\n";

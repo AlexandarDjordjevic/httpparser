@@ -7,287 +7,299 @@
  * 
  */
 #pragma once
-#include <iostream>
 #include <utility>
 #include <map>
+#include <regex>
 #include <vector>
 #include <URI/Uri.h>
 
 namespace HTTP
 {   
-
-/**
-    * @brief Enumeration for HTTP methods
-    * 
-    */
-enum class Method{
-    GET = 0,
-    HEAD = 1,
-    POST = 2, 
-    PUT = 3, 
-    DELETE = 4, 
-    CONNECT = 5, 
-    OPTIONS = 6, 
-    TRACE = 7, 
-    PATCH = 8,
-    COUNT = 9
-};
-
-/**
-    * @brief Enumeration for HTTP versions
-    * 
-    */
-enum class Version {
-    HTTP09 = 0,
-    HTTP10 = 1,
-    HTTP11 = 2,
-    HTTP20 = 3,
-};
- /**
-     * @brief Enumeration for Header-fields
+  
+    /**
+     * @brief Enumeration for HTTP methods
      * 
      */
-enum class Field_Key_Word{
-    Accept,
-    AcceptCharset,
-    AcceptEncoding,
-    AcceptLanguage,
-    Authorization,
-    Except,
-    From,
-    Host,
-    IfMatch,
-    IfModifiedSince,
-    IfNoneMatch,
-    IfRange,
-    IfUnmodifiedSince,
-    MaxForwards,
-    ProxyAuthorization,
-    Range,
-    Referer,
-    TE,
-    UserAgent
-};
+    enum class Method {
+        GET = 0,
+        HEAD = 1,
+        POST = 2, 
+        PUT = 3, 
+        DELETE = 4, 
+        CONNECT = 5, 
+        OPTIONS = 6, 
+        TRACE = 7, 
+        PATCH = 8,
+        COUNT = 9
+    };
 
-/**
- * @brief Structur for filds in fields consist of key word for field and value for that field
- * 
- */
-struct Header_Field{
-
-    Field_Key_Word field;
-    std::string f_value;
-};
-/**
-     * @brief Maping string with enumeration Header-fields
+    /**
+     * @brief Enumeration for HTTP versions
      * 
      */
-const std::map<std::string, Field_Key_Word> fields_table = {
-    {"Accept:",              Field_Key_Word::Accept              },
-    {"Accept-Charset:",      Field_Key_Word::AcceptCharset       },
-    {"Accept-Encoding:",     Field_Key_Word::AcceptEncoding      },
-    {"Accept-Language:",     Field_Key_Word::AcceptLanguage      },
-    {"Authorization:",       Field_Key_Word::Authorization       },
-    {"Except:",              Field_Key_Word::Except              },
-    {"From:",                Field_Key_Word::From                },
-    {"Host:",                Field_Key_Word::Host                },
-    {"If-Match:",            Field_Key_Word::IfMatch             },
-    {"If-Modified-Since:",   Field_Key_Word::IfModifiedSince     },
-    {"If-None-Match:",       Field_Key_Word::IfNoneMatch         },
-    {"If-Range:",            Field_Key_Word::IfRange             },
-    {"If-Unmodified-Since:", Field_Key_Word::IfUnmodifiedSince   },
-    {"Max-Forwards:",        Field_Key_Word::MaxForwards         },
-    {"Proxy-Authorization:", Field_Key_Word::ProxyAuthorization  },
-    {"Range:",               Field_Key_Word::Range               },
-    {"Referer:",             Field_Key_Word::Referer             },
-    {"TE:",                  Field_Key_Word::TE                  },
-    {"User-Agent:",          Field_Key_Word::UserAgent           }
-};
+    enum class Version {
+        HTTP09 = 0,
+        HTTP10 = 1,
+        HTTP11 = 2,
+        HTTP20 = 3
+    };
 
-/**
-    * @brief Maping string with enumeration HTTP method
-    * 
-    */
-const std::map<std::string, Method> table = { 
-    { "GET",     Method::GET     }, 
-    { "HEAD",    Method::HEAD    },
-    { "POST",    Method::POST    }, 
-    { "PUT",     Method::PUT     }, 
-    { "DELETE",  Method::DELETE  }, 
-    { "CONNECT", Method::CONNECT },
-    { "OPTIONS", Method::OPTIONS },
-    { "TRACE",   Method::TRACE   },
-    { "PATCH",   Method::PATCH   },
-    { "COUNT",   Method::COUNT   }
-};
+    /**
+     * @brief Maping string with enumeration HTTP method
+     * 
+     */
+    const std::map<std::string, Method> table = { 
+        { "GET",     Method::GET     }, 
+        { "HEAD",    Method::HEAD    },
+        { "POST",    Method::POST    }, 
+        { "PUT",     Method::PUT     }, 
+        { "DELETE",  Method::DELETE  }, 
+        { "CONNECT", Method::CONNECT },
+        { "OPTIONS", Method::OPTIONS },
+        { "TRACE",   Method::TRACE   },
+        { "PATCH",   Method::PATCH   },
+        { "COUNT",   Method::COUNT   }
+    };
 
-/**
-    * @brief Maping string with enumeration HTTP-versions
-    * 
-    */
-const std::map<std::string, Version> table_versions = {
-    { "HTTP/0.9", Version::HTTP09 },
-    { "HTTP/1.0", Version::HTTP10 },
-    { "HTTP/1.1", Version::HTTP11 },
-    { "HTTP/2.0", Version::HTTP20 }
-};
+    /**
+     * @brief Maping string with enumeration HTTP-versions
+     * 
+     */
+    const std::map<std::string, Version> table_versions = {
+        { "HTTP/0.9", Version::HTTP09 },
+        { "HTTP/1.0", Version::HTTP10 },
+        { "HTTP/1.1", Version::HTTP11 },
+        { "HTTP/2.0", Version::HTTP20 }
+    };
+  
+    /**
+     * @brief Structur for filds in fields consist of key word for field and value for that field
+     * 
+     */
+    struct Header_Field{
 
-class Request{
+        Field_Key_Word field;
+        std::string f_value;
+    };
 
+    class Request{
+      
     public:
 
-    /**
-        * @brief Default constructor
-        * 
-        */
-    Request();
+        /**
+         * @brief Default constructor
+         * 
+         */
+        Request();
 
-    /**
-        * @brief Default destructor
-        * 
-        */
-    ~Request();
+        /**
+         * @brief Default destructor
+         * 
+         */
+        ~Request();
 
-    Request(const Request&) = delete;
-    Request& operator=(const Request&) = delete;
-    Request(Request&&) = delete;
-    Request& operator=(Request &&) = delete;
+        Request(const Request&) = delete;
+        Request& operator=(const Request&) = delete;
+        Request(Request&&) = delete;
+        Request& operator=(Request &&) = delete;
 
-    /**
-    * @brief Get the Method object
-    * 
-    * @return Method 
-    */
-    Method get_method();
+        /**
+         * @brief Get the Method object
+         * 
+         * @return Method 
+         */
+        Method get_method();
 
-    /**
-        * @brief Get the version object
-        * 
-        * @return Version 
-        */
-    Version get_version();
+        /**
+         * @brief Get the version object
+         * 
+         * @return Version 
+         */
+        Version get_version();
 
-    /**
-        * @brief Parsing request line, if request line is valid returns true, otherwise returns false
-        * 
-        * @param request_line 
-        * @return true 
-        * @return false 
-        */
-    bool parse_request_line(const std::string& request_line);
+        /**
+         * @brief Get the uri type 
+         * 
+         * @return std::string 
+         */
+        std::string get_uri_type();
 
-private:
+        /**
+         * @brief Parsing request line
+         * 
+         * @param request_line 
+         * @return true if request line is valid, otherwise returns false
+         */
+        bool parse_request_line(const std::string& request_line);
 
-    /**
-        * @brief String tokenize
-        * 
-        * @param s 
-        * @return std::pair<std::string, std::string> 
-        */
-    std::pair<std::string, std::string> tokenize(const std::string& s, const std::string& delimeter);
+    private:
 
-    /**
-        * @brief Validating Http request Method
-        * 
-        * @param method 
-        * @return true 
-        * @return false 
-        */
-    bool validate_method(const std::string& method);
+        /**
+         * @brief Maping enum Uri_type to string 
+         * 
+         * @return const std::string 
+         */
+        const std::string uri_type_to_stirng();
+        
+        /**
+         * @brief A sequence of calls to this function split text into tokens, which are strings separated by delimiter string
+         * 
+         * @param text 
+         * @param delimeter 
+         * @param position this is position from witch we search delimeter 
+         * @return std::pair<std::string, std::size_t> first is substring from position to delimeter, second is one position after delimeter 
+         */
+        std::pair<std::string, std::size_t> tokenize(const std::string& text, const std::string& delimeter, std::size_t position);
 
-    /**
-        * @brief Validating Uri using function from_string() from Uri.h
-        * 
-        * @param uri 
-        * @return bool
-        */
-    bool validate_uri(const std::string& uri);
+        /**
+         * @brief Validating Http request Method
+         * 
+         * @param method 
+         * @return true if method is valid, otherwise returns false
+         */
+        bool validate_method(const std::string& method);
 
-    /**
-        * @brief Validating Http version
-        * 
-        * @param version 
-        * @return true 
-        * @return false 
-        */
-    bool validate_version(const std::string& version);
+        /**
+         * @brief Validating Uri 
+         * 
+         * @param uri 
+         * @return true if uri is valid, otherwise returns false
+         */
+        bool validate_uri(const std::string& uri);
 
-    /**
-        * @brief Checking if "main_string" ends with "to_match" string
-        * 
-        * @param main_str 
-        * @param to_match 
-        * @return true 
-        * @return false 
-        */
-    bool ends_with(const std::string &main_str, const std::string &to_match);
+        /**
+         * @brief Checks if uri of request is an absolute uri
+         * 
+         * @param uri 
+         * @return true if uri is absolute, otherwise returns false
+         */
+        bool validate_absolute_uri(const std::string& uri);
 
-    /**
-     * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_fields
-     * if each header fild is valid, returns true, otherwise returns false
-     * 
-     * @param fields 
-     * @return true 
-     * @return false 
-     */
-    bool parse_header_fields(const std::string& header);
+        /**
+         * @brief Checks if uri of request is an absolute path
+         * 
+         * @param uri 
+         * @return true if path is absolute, otherwise returns false
+         */
+        bool validate_absolute_path(const std::string& uri);
 
-private:
+        /**
+         * @brief Checks if uri of request is just authority part of an uri 
+         * 
+         * @param uri 
+         * @return true if uri has only authority, otherwise returns false 
+         */
+        bool validate_authority_uri(const std::string& uri);
+        
+        /**
+         * @brief Validate conditions of asterisk uri 
+         * 
+         * @param uri 
+         * @return true if uri is aterisk, otherwise returns false
+         */
+        bool validate_aterisk_uri(const std::string& uri);
 
-    /**
-    * @brief Defining CRLF
-    * 
-    */
-    const std::string CRLF = "\r\n";
+        /**
+         * @brief Validating Http version
+         * 
+         * @param version 
+         * @return true if version is valid, otherwise returns false
+         */
+        bool validate_version(const std::string& version);
 
-    /**
-        * @brief empty const string 
-        * 
-        */
-    const std::string empty_string{""};
+        /**
+         * @brief Checking if "main_string" ends with "to_match" string
+         * 
+         * @param main_str 
+         * @param to_match 
+         * @return true if main_stirng ends with to_match otherwise returns false
+         */
+        bool ends_with(const std::string &main_str, const std::string &to_match);
+        
+        /**
+         * @brief Accepts whole header from request and parses header_fields, stores each header_field in vector<Header_Field> m_fields
+         * if each header fild is valid, returns true, otherwise returns false
+         * 
+         * @param fields 
+         * @return true 
+         * @return false 
+         */
+        bool parse_header_fields(const std::string& header);
 
-    /**
-        * @brief asterisk const string for checking scheme of uri
-        * 
-        */
-    const std::string asterisk {"*"};
+    private:
 
-    /**
-        * @brief http const string for checking scheme of uri
-        * 
-        */
-    const std::string http{"http"};
+        /**
+         * @brief Defining CRLF
+         * 
+         */
+        const std::string CRLF = "\r\n";
 
-    /**
-        * @brief https const string for checking scheme of uri
-        * 
-        */
-    const std::string https{"https"};
+        /**
+         * @brief asterisk const string for checking scheme of uri
+         * 
+         */
+        const std::string asterisk {"*"};
 
-    /**
-        * @brief HTTP method atribute
-        * 
-        */
-    Method m_method;
+        /**
+         * @brief http const string for checking scheme of uri
+         * 
+         */
+        const std::string http{"http"};
 
-    /**
-        * @brief HTTP uri atribute
-        * 
-        */
-    URI::Uri m_uri;
+        /**
+         * @brief https const string for checking scheme of uri
+         * 
+         */
+        const std::string https{"https"};
 
-    /**
-        * @brief HTTP version atribute
-        * 
-        */
-    Version m_version;
+        /**
+         * @brief Enum for request uri type 
+         * 
+         */
+        enum class Uri_type{
+            asterisk , 
+            absolute_uri,
+            absolute_path,
+            authority
+        };
 
-    /**
+        /**
+         * @brief Struct that supports different types of uri 
+         * 
+         */
+        struct Request_uri
+        {
+            Uri_type type;
+            URI::Uri uri_obj;
+            std::string uri_str;
+        };
+
+        /**
+         * @brief Struct that represents different types of uri in requests
+         * 
+         */
+        Request_uri m_uri; 
+
+        /**
+         * @brief HTTP method atribute
+         * 
+         */
+        Method m_method;
+        
+        /**
+         * @brief HTTP version atribute
+         * 
+         */
+        Version m_version;
+        
+        /**
         * @brief Represent header that is constucted of fields fields 
         * 
         */
-    std::vector<Header_Field> m_header;
-};
+        std::vector<Header_Field> m_header;
+
+    };
+
 
 }//namespace Namespace
 
