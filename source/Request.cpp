@@ -35,6 +35,18 @@ namespace HTTP{
         }
         return "";
     }
+
+    bool Request::parse_request_body(const std::string& body)
+    {
+        // The presence of a message-body in a request is signaled by the
+        // inclusion of a Content-Length or Transfer-Encoding header field in
+        // the request's message-headers. A message-body MUST NOT be included in
+        // a request if the specification of the request method (section 5.1.1)
+        // does not allow sending an entity-body in requests. A server SHOULD
+        // read and forward a message-body on any request; if the request method
+        // does not include defined semantics for an entity-body, then the
+        // message-body SHOULD be ignored when handling the request.
+    }
     
     std::pair<std::string, std::size_t> Request::tokenize(const std::string& text, const std::string& delimeter, std::size_t position) 
     { 

@@ -149,6 +149,14 @@ namespace HTTP
         bool parse_request_line(const std::string& request_line);
 
         /**
+         * @brief 
+         * 
+         * @param body 
+         * @return true if body is valid, otherwise returns false
+         */
+        bool parse_request_body(const std::string& body);
+
+        /**
          * @brief Parsin request into its components and validatin each of them
          * 
          * @param request 
