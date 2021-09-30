@@ -176,3 +176,47 @@ TEST(HTTPParser, get_request_with_header){
     auto k = parser.get_field_value("Host");
     ASSERT_EQ(k,"guru99.com" );
 };
+
+TEST(HTTPParser, get_request_with_header_agent){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.from_string(test_http_request);
+    auto k = parser.get_field_value("User-Agent");
+    ASSERT_EQ(k,"Mozilla/5.0" );
+};
+
+TEST(HTTPParser, get_request_with_header_full){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.parse_request_line(test_http_request);
+    ASSERT_TRUE(result);
+};
+
+TEST(HTTPParser, parse_request_full){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.parse_request(test_http_request);
+    ASSERT_TRUE(result);
+};
+
+TEST(HTTPParser, parse_request_full_invalid_wrong_version){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.4\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.parse_request(test_http_request);
+    ASSERT_FALSE(result);
+};
+
+TEST(HTTPParser, parse_request_invalid_no_crlf){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1 Host: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
+    auto result = parser.parse_request(test_http_request);
+    ASSERT_FALSE(result);
+};
+
+TEST(HTTPParser, parse_request_invalid_no_crlfx2){
+    HTTP::Request parser;
+    std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1 Host: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n";
+    auto result = parser.parse_request(test_http_request);
+    ASSERT_FALSE(result);
+};
+

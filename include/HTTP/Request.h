@@ -87,6 +87,14 @@ namespace HTTP
     public:
 
         /**
+         * @brief 
+         * 
+         * @param request 
+         * @return true if request is valid, othewise returns false
+         */
+        bool parse_request(const std::string& request);
+
+        /**
          * @brief Default constructor
          * 
          */

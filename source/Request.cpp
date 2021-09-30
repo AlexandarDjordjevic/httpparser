@@ -42,6 +42,12 @@ namespace HTTP{
         return { text.substr(position, found - position), found + delimeter.length() };
     }
 
+    bool Request::parse_request(const std::string& request)
+    {
+        auto result= (parse_request_line(request) && from_string(request))? true :  false;
+        return result;
+    }
+
     const std::string Request::uri_type_to_stirng()
     {
         switch (m_uri.type)
