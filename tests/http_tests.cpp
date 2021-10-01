@@ -220,3 +220,10 @@ TEST(HTTPParser, parse_request_invalid_no_crlfx2){
     ASSERT_FALSE(result);
 };
 
+TEST(HTTPParser, parse_body_full){
+    HTTP::Request parser;
+    std::string test_http_request= "POST /test HTTP/1.1\r\nHost: foo.example\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 27\r\n\r\nfield1=value1&field2=value2";
+    auto result = parser.from_string(test_http_request);
+    std::size_t body_len = parser.get_body_length();
+    ASSERT_EQ(body_len, 27);
+};

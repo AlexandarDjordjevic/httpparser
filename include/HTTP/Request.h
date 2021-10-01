@@ -73,13 +73,23 @@ namespace HTTP
     };
   
     /**
-     * @brief Structur for filds in fields consist of key word for field and value for that field
+     * @brief Structure for filds in fields consist of key word for field and value for that field
      * 
      */
     struct Header_field{
 
         std::string key;
         std::string value;
+    };
+
+    /**
+     * @brief Structure for HTTP body
+     * 
+     */
+    struct Body{
+        std::string type;
+        std::size_t length;
+        std::string data;
     };
 
     class Request{
@@ -133,6 +143,30 @@ namespace HTTP
         std::string get_field_value(const std::string& key);
 
         /**
+         * @brief Get the body type 
+         * 
+         * @param body 
+         * @return std::string 
+         */
+        std::string get_body_type();
+
+        /**
+         * @brief Get the body lenght 
+         * 
+         * @param body 
+         * @return std::string 
+         */
+        std::size_t get_body_length();
+
+        /**
+         * @brief Get the body data 
+         * 
+         * @param body 
+         * @return std::string 
+         */
+        std::string get_body_data();
+
+        /**
          * @brief Parsing request line
          * 
          * @param request_line 
@@ -146,7 +180,7 @@ namespace HTTP
          * @param body 
          * @return true if body is valid, otherwise returns false
          */
-        bool parse_request_body(const std::string& body);
+        bool parse_body(const std::string& body);
 
         /**
          * @brief Parsin request into its components and validatin each of them
@@ -319,6 +353,12 @@ namespace HTTP
         * 
         */
         std::vector<Header_field> m_header;
+
+        /**
+         * @brief Request body attribute
+         * 
+         */
+        Body m_body;
 
     };
 

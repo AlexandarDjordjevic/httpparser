@@ -24,7 +24,7 @@ namespace HTTP{
     {
         return uri_type_to_stirng();
     }
-
+    
     std::string Request::get_field_value(const std::string& key)
     {
         auto it = std::find_if(m_header.begin(), m_header.end(), [&key](const Header_field &field){ return field.key == key; });
@@ -36,20 +36,39 @@ namespace HTTP{
         return "";
     }
 
-    bool Request::parse_request_body(const std::string& body)
+    std::string Request::get_body_type()
     {
-        // The presence of a message-body in a request is signaled by the
-        // inclusion of a Content-Length or Transfer-Encoding header field in
-        // the request's message-headers. A message-body MUST NOT be included in
-        // a request if the specification of the request method (section 5.1.1)
-        // does not allow sending an entity-body in requests. A server SHOULD
-        // read and forward a message-body on any request; if the request method
-        // does not include defined semantics for an entity-body, then the
-        // message-body SHOULD be ignored when handling the request.
+        return m_body.type;
+    }
+
+    std::size_t Request::get_body_length()
+    {
+        return m_body.length;
+    }
+    
+    std::string Request::get_body_data()
+    {
+        return m_body.data;
+    }
+
+    bool Request::parse_body(const std::string& body)
+    {
+        std::string con_len = get_field_value("Content-Length");
+        std::string encoding = get_field_value("Transfer-Encoding");
+        const auto body_length([](const std::string &body, std::string &con_len, std::string &encoding) -> size_t
+            {
+                if (con_len.empty() == true && encoding.empty() == false ) 
+                    return body.length();
+
+                return (body.length() == stoi(con_len)) ? stoi(con_len) : 0;
+            });
+        m_body.length = body_length(body, con_len, encoding);
+        m_body.data = body;
+        m_body.type = get_field_value("Content-Type");
 
         return true;
     }
-    
+
     std::pair<std::string, std::size_t> Request::tokenize(const std::string& text, const std::string& delimeter, std::size_t position) 
     { 
         std::size_t found = text.find(delimeter, position);
@@ -168,10 +187,16 @@ namespace HTTP{
         }
 
         request_tokens = tokenize(request, CRLF + CRLF,request_tokens.second);
-        if(parse_header_fields(request_tokens.first)==false)
+        if(parse_header_fields(request_tokens.first) == false)
         {
             return false;
             
+        }
+
+        request_tokens = tokenize(request,"\0",request_tokens.second);
+        if(request_tokens.first.empty() == false && parse_body(request_tokens.first) == false)
+        {
+            return false;
         }
         return true;
     }
