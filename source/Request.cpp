@@ -46,18 +46,14 @@ namespace HTTP{
         // read and forward a message-body on any request; if the request method
         // does not include defined semantics for an entity-body, then the
         // message-body SHOULD be ignored when handling the request.
+
+        return true;
     }
     
     std::pair<std::string, std::size_t> Request::tokenize(const std::string& text, const std::string& delimeter, std::size_t position) 
     { 
         std::size_t found = text.find(delimeter, position);
         return { text.substr(position, found - position), found + delimeter.length() };
-    }
-
-    bool Request::parse_request(const std::string& request)
-    {
-        auto result= (parse_request_line(request) && from_string(request))? true :  false;
-        return result;
     }
 
     const std::string Request::uri_type_to_stirng()
