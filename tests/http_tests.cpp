@@ -210,6 +210,7 @@ TEST(HTTPParser, parse_request_invalid_no_crlf){
     HTTP::Request request;
     std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1 Host: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
     auto result = request.from_string(test_http_request);
+
     ASSERT_FALSE(result);
 };
 
