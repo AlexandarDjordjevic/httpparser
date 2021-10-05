@@ -1,5 +1,5 @@
 #include <HTTP/Request.h>
-#include <iostream>
+
 namespace HTTP{
 
     Request::Request()
@@ -27,13 +27,16 @@ namespace HTTP{
     
     std::string Request::get_field_value(const std::string& key)
     {
-        auto it = std::find_if(m_header.begin(), m_header.end(), [&key](const Header_field &field){ return field.key == key; });
-        if (it != m_header.end())
+        std::vector<Header_field>::iterator itr = m_header.begin();
+        while (itr != m_header.end())
         {
-            auto index = std::distance(m_header.begin(), it);
-            return m_header[index].value;
+            auto index = std::distance(m_header.begin(), itr);
+            if(m_header[index].key == key)
+             return m_header[index].value;
+            
+            itr++;
         }
-        return "";
+        return {};
     }
 
     std::string Request::get_body_type()
@@ -55,13 +58,13 @@ namespace HTTP{
     {
         std::string con_len = get_field_value("Content-Length");
         std::string encoding = get_field_value("Transfer-Encoding");
-        const auto body_length([](const std::string &body, std::string &con_len, std::string &encoding) -> size_t
-            {
-                if (con_len.empty() == true && encoding.empty() == false ) 
-                    return body.length();
 
-                return (body.length() == stoi(con_len)) ? stoi(con_len) : 0;
-            });
+        const auto body_length([](const std::string &body, std::string &con_len, std::string &encoding) -> size_t
+        {
+            if (con_len.empty() == true && encoding.empty() == false ) 
+                return body.length();
+            return (body.length() == std::stoi(con_len)) ? std::stoi(con_len) : 0;
+        });
         m_body.length = body_length(body, con_len, encoding);
         m_body.data = body;
         m_body.type = get_field_value("Content-Type");
@@ -192,8 +195,8 @@ namespace HTTP{
             return false;
             
         }
-
-        request_tokens = tokenize(request,"\0",request_tokens.second);
+        
+        request_tokens.first = request.substr(request_tokens.second, request.length()-1);
         if(request_tokens.first.empty() == false && parse_body(request_tokens.first) == false)
         {
             return false;
@@ -222,20 +225,28 @@ namespace HTTP{
     {
         Header_field h_field;
         std::pair<std::string, std::size_t> header_tokens;
+        std::size_t h_position = 0;
         std::pair<std::string, std::size_t> fields_tokens;
-       
-        header_tokens = tokenize(header, "\n", 0);
+        header_tokens = tokenize(header, "\n", h_position);
+
         do
         {
             fields_tokens = tokenize(header_tokens.first, ": ", 0);
             h_field.key = fields_tokens.first;
-            h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length()-1);
+            h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length() - 1);
             m_header.push_back(h_field);
 
+            h_position = header_tokens.second;
             header_tokens = tokenize(header, "\n", header_tokens.second);
-        }
-        while(header_tokens.second != 0);
-        
+
+        } while( header_tokens.second != 0 );
+
+        header_tokens.first = header.substr(h_position, header.length() - 1);
+        fields_tokens = tokenize(header_tokens.first, ": ", 0);
+        h_field.key = fields_tokens.first;
+        h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length() - 1);
+        m_header.push_back(h_field);
+
         return true;
     }
 
