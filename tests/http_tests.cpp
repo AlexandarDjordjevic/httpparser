@@ -231,6 +231,7 @@ TEST(HTTPParser, parse_request_invalid_no_crlf){
                                     "Accept-Encoding: gzip, deflate\n"
                                     "Accept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
     auto result = request.from_string(test_http_request);
+
     ASSERT_FALSE(result);
 };
 
