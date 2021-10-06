@@ -61,9 +61,13 @@ namespace HTTP{
 
         const auto body_length([](const std::string &body, std::string &con_len, std::string &encoding) -> size_t
         {
-            if (con_len.empty() == true && encoding.empty() == false ) 
+           
+            if (con_len.empty() == true && encoding.empty() == false )
+            {
                 return body.length();
-            return (body.length() == std::stoi(con_len)) ? std::stoi(con_len) : 0;
+            }
+                
+            return (con_len.empty()== false && body.length() == std::stoi(con_len)) ? std::stoi(con_len) : 0;
         });
         m_body.length = body_length(body, con_len, encoding);
         m_body.data = body;
