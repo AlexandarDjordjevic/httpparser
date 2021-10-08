@@ -1,4 +1,5 @@
 #include <HTTP/Request.h>
+#include <regex>
 
 namespace HTTP{
 
@@ -10,46 +11,41 @@ namespace HTTP{
     {
     }
 
-    Method Request::get_method()
+    Method Request::get_method() const
     {
         return m_method;
     }
 
-    Version Request::get_version()
+    Version Request::get_version() const
     {
         return m_version;
     }
 
-    std::string Request::get_uri_type()
+    std::string Request::get_uri_type() const
     {
         return uri_type_to_stirng();
     }
     
-    std::string Request::get_field_value(const std::string& key)
+    std::string Request::get_field_value(const std::string& key) const 
     {
-        std::vector<Header_field>::iterator itr = m_header.begin();
-        while (itr != m_header.end())
+        if(m_header.count(key) > 0)
         {
-            auto index = std::distance(m_header.begin(), itr);
-            if(m_header[index].key == key)
-             return m_header[index].value;
-            
-            itr++;
+            return m_header.find(key)->second;
         }
         return {};
     }
 
-    std::string Request::get_body_type()
+    std::string Request::get_body_type() const 
     {
         return m_body.type;
     }
 
-    std::size_t Request::get_body_length()
+    std::size_t Request::get_body_length() const 
     {
         return m_body.length;
     }
     
-    std::string Request::get_body_data()
+    std::string Request::get_body_data() const 
     {
         return m_body.data;
     }
@@ -82,7 +78,7 @@ namespace HTTP{
         return { text.substr(position, found - position), found + delimeter.length() };
     }
 
-    const std::string Request::uri_type_to_stirng()
+    const std::string Request::uri_type_to_stirng() const 
     {
         switch (m_uri.type)
         {
@@ -105,7 +101,7 @@ namespace HTTP{
         return false; 
     }
 
-    bool Request::validate_aterisk_uri(const std::string& uri)
+    bool Request::parse_aterisk_uri(const std::string& uri)
     {
         if( uri == asterisk && m_method == Method::OPTIONS){
             m_uri.uri_str = asterisk; 
@@ -115,7 +111,7 @@ namespace HTTP{
         return false;
     }
 
-    bool Request::validate_absolute_uri(const std::string& uri)
+    bool Request::parse_absolute_uri(const std::string& uri)
     {
         m_uri.uri_obj.from_string(uri);
         if((m_uri.uri_obj.get_scheme() == http || m_uri.uri_obj.get_scheme() == https ) && (m_uri.uri_obj.get_path().empty() == false))
@@ -127,7 +123,7 @@ namespace HTTP{
         return false;
     }
 
-    bool Request::validate_absolute_path(const std::string& uri)
+    bool Request::parse_absolute_path(const std::string& uri)
     {
         m_uri.uri_obj.from_string(uri);
         if(m_uri.uri_obj.get_scheme().empty() == true && m_uri.uri_obj.get_path().empty() == false)
@@ -139,9 +135,10 @@ namespace HTTP{
         return false;
     }
 
-    bool Request::validate_authority_uri(const std::string& uri)
+    bool Request::parse_authority_uri(const std::string& uri)
     {
-        if(std::regex_match( uri.begin(), uri.end(), std::regex(R"([a-zA-Z0-9+:\_\.@]*)")) && m_method == Method::CONNECT){
+        if(std::regex_match( uri.begin(), uri.end(), std::regex(R"([a-zA-Z0-9+:\_\.@]*)")) && m_method == Method::CONNECT)
+        {
             m_uri.uri_str = uri;
             m_uri.type = Uri_type::authority;
             return true; 
@@ -151,7 +148,7 @@ namespace HTTP{
 
     bool Request::validate_uri(const std::string& uri)
     {
-        return validate_aterisk_uri(uri) || validate_absolute_uri(uri) || validate_absolute_path(uri) || validate_authority_uri(uri);
+        return parse_aterisk_uri(uri) || parse_absolute_uri(uri) || parse_absolute_path(uri) || parse_authority_uri(uri);
     }
 
     bool Request::parse_request_line(const std::string& request_line)
@@ -160,7 +157,6 @@ namespace HTTP{
         {   
             return false;
         }
-
         std::pair<std::string, std::size_t > req_line_tokens;
         req_line_tokens = tokenize(request_line, " ", 0);
         if(validate_method(req_line_tokens.first) == false)
@@ -188,22 +184,22 @@ namespace HTTP{
         }
         std::pair<std::string, std::size_t> request_tokens;
         request_tokens = tokenize(request, CRLF, 0);
-        if(parse_request_line(request_tokens.first) == false)
+        if(request_tokens.first.empty() == false && parse_request_line(request_tokens.first) == false)
         {
             return false;
         }
-
         request_tokens = tokenize(request, CRLF + CRLF,request_tokens.second);
-        if(parse_header_fields(request_tokens.first) == false)
+        if(request_tokens.first.empty() == false && parse_header_fields(request_tokens.first) == false)
         {
             return false;
             
         }
-        
-        request_tokens.first = request.substr(request_tokens.second, request.length()-1);
-        if(request_tokens.first.empty() == false && parse_body(request_tokens.first) == false)
-        {
-            return false;
+        if(request_tokens.first.empty() == false){
+            request_tokens.first = request.substr(request_tokens.second, request.length()-1);
+            if(request_tokens.first.empty() == false && parse_body(request_tokens.first) == false)
+            {
+                return false;
+            }
         }
         return true;
     }
@@ -227,30 +223,36 @@ namespace HTTP{
 
     bool Request::parse_header_fields(const std::string& header)
     {
-        Header_field h_field;
-        std::pair<std::string, std::size_t> header_tokens;
         std::size_t h_position = 0;
-        std::pair<std::string, std::size_t> fields_tokens;
+        std::pair<std::string, std::size_t> header_tokens;
         header_tokens = tokenize(header, "\n", h_position);
 
+        int first_group = 1;
+        int second_group = 2;
+        std::string key;
+        std::string value;
+        std::smatch match;
         do
         {
-            fields_tokens = tokenize(header_tokens.first, ": ", 0);
-            h_field.key = fields_tokens.first;
-            h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length() - 1);
-            m_header.push_back(h_field);
+            if(std::regex_search(header_tokens.first.cbegin(), header_tokens.first.cend(), match, std::regex("(.*):\\s(.*)")))
+            {
+                key = match[first_group];
+                value = match[second_group];
+            }
+            m_header[key] = value;
 
             h_position = header_tokens.second;
             header_tokens = tokenize(header, "\n", header_tokens.second);
 
-        } while( header_tokens.second != 0 );
+        }while( header_tokens.second != 0 );
 
         header_tokens.first = header.substr(h_position, header.length() - 1);
-        fields_tokens = tokenize(header_tokens.first, ": ", 0);
-        h_field.key = fields_tokens.first;
-        h_field.value = header_tokens.first.substr(fields_tokens.second, header_tokens.first.length() - 1);
-        m_header.push_back(h_field);
-
+        if(std::regex_search(header_tokens.first.cbegin(), header_tokens.first.cend(), match, std::regex("(.*):\\s(.*)")))
+        {
+            key = match[first_group];
+            value = match[second_group];
+        }
+        m_header[key] = value;
         return true;
     }
 

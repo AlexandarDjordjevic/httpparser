@@ -15,7 +15,7 @@
 
 namespace HTTP
 {   
-  
+
     /**
      * @brief Enumeration for HTTP methods
      * 
@@ -73,16 +73,6 @@ namespace HTTP
     };
   
     /**
-     * @brief Structure for filds in fields consist of key word for field and value for that field
-     * 
-     */
-    struct Header_field{
-
-        std::string key;
-        std::string value;
-    };
-
-    /**
      * @brief Structure for HTTP body
      * 
      */
@@ -114,25 +104,25 @@ namespace HTTP
         Request& operator=(Request &&) = delete;
 
         /**
-         * @brief Get the Method object
+         * @brief Get the request method 
          * 
          * @return Method 
          */
-        Method get_method();
+        Method get_method() const;
 
         /**
          * @brief Get the version object
          * 
          * @return Version 
          */
-        Version get_version();
+        Version get_version() const;
 
         /**
          * @brief Get the uri type 
          * 
          * @return std::string 
          */
-        std::string get_uri_type();
+        std::string get_uri_type() const;
 
         /**
          * @brief Get the header field value which key word is key
@@ -140,7 +130,7 @@ namespace HTTP
          * @param key 
          * @return std::string 
          */
-        std::string get_field_value(const std::string& key);
+        std::string get_field_value(const std::string& key) const;
 
         /**
          * @brief Get the body type 
@@ -148,7 +138,7 @@ namespace HTTP
          * @param body 
          * @return std::string 
          */
-        std::string get_body_type();
+        std::string get_body_type() const;
 
         /**
          * @brief Get the body lenght 
@@ -156,7 +146,7 @@ namespace HTTP
          * @param body 
          * @return std::string 
          */
-        std::size_t get_body_length();
+        std::size_t get_body_length() const;
 
         /**
          * @brief Get the body data 
@@ -164,8 +154,18 @@ namespace HTTP
          * @param body 
          * @return std::string 
          */
-        std::string get_body_data();
+        std::string get_body_data() const;
 
+        /**
+         * @brief Parsin request into its components and validatin each of them
+         * 
+         * @param request 
+         * @return true if request is valid otherwise returns false
+         */
+        bool from_string(const std::string& request);
+
+    private:
+        
         /**
          * @brief Parsing request line
          * 
@@ -183,21 +183,11 @@ namespace HTTP
         bool parse_body(const std::string& body);
 
         /**
-         * @brief Parsin request into its components and validatin each of them
-         * 
-         * @param request 
-         * @return true if request is valid otherwise returns false
-         */
-        bool from_string(const std::string& request);
-
-    private:
-
-        /**
          * @brief Maping enum Uri_type to string 
          * 
          * @return const std::string 
          */
-        const std::string uri_type_to_stirng();
+        const std::string uri_type_to_stirng() const;
         
         /**
          * @brief A sequence of calls to this function split text into tokens, which are strings separated by delimiter string
@@ -226,36 +216,36 @@ namespace HTTP
         bool validate_uri(const std::string& uri);
 
         /**
-         * @brief Checks if uri of request is an absolute uri
+         * @brief Parsing and validating request uri if it represents an absolute uri
          * 
          * @param uri 
          * @return true if uri is absolute, otherwise returns false
          */
-        bool validate_absolute_uri(const std::string& uri);
+        bool parse_absolute_uri(const std::string& uri);
 
         /**
-         * @brief Checks if uri of request is an absolute path
+         * @brief Parsing and validating request uri if it represents an absolute path 
          * 
          * @param uri 
          * @return true if path is absolute, otherwise returns false
          */
-        bool validate_absolute_path(const std::string& uri);
+        bool parse_absolute_path(const std::string& uri);
 
         /**
-         * @brief Checks if uri of request is just authority part of an uri 
+         * @brief Parsing and validating request uri if it represents an authority part of an uri 
          * 
          * @param uri 
          * @return true if uri has only authority, otherwise returns false 
          */
-        bool validate_authority_uri(const std::string& uri);
+        bool parse_authority_uri(const std::string& uri);
         
         /**
-         * @brief Validate conditions of asterisk uri 
+         * @brief Parsing and validating request uri if it is an asterisk
          * 
          * @param uri 
          * @return true if uri is aterisk, otherwise returns false
          */
-        bool validate_aterisk_uri(const std::string& uri);
+        bool parse_aterisk_uri(const std::string& uri);
 
         /**
          * @brief Validating Http version
@@ -349,10 +339,10 @@ namespace HTTP
         Version m_version;
         
         /**
-        * @brief Represent header that is constructed of fields fields 
-        * 
-        */
-        std::vector<Header_field> m_header;
+         * @brief Map for header fields, first element is name of field, second is value 
+         * 
+         */
+        std::map<std::string, std::string> m_header;
 
         /**
          * @brief Request body attribute
