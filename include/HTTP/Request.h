@@ -130,7 +130,7 @@ namespace HTTP
          * @param key 
          * @return std::string 
          */
-        std::string get_field_value(const std::string& key) const;
+        std::string get_header_field_value(const std::string& key) const;
 
         /**
          * @brief Get the body type 
@@ -303,7 +303,7 @@ namespace HTTP
          * 
          */
         enum class Uri_type{
-            asterisk , 
+            asterisk, 
             absolute_uri,
             absolute_path,
             authority

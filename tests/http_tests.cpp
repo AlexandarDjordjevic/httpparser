@@ -178,7 +178,7 @@ TEST(HTTPParser, get_request_with_header){
                                     "Accept-Encoding: gzip, deflate\n"
                                     "Accept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
     auto result = request.from_string(test_http_request);
-    auto k = request.get_field_value("Host");
+    auto k = request.get_header_field_value("Host");
     ASSERT_EQ(k,"guru99.com" );
 };
 
@@ -186,7 +186,7 @@ TEST(HTTPParser, get_request_with_header_agent){
     HTTP::Request request;
     std::string test_http_request= "GET /REgisterStudent.asp?user=jhon&pass=java HTTP/1.1\r\nHost: guru99.com\nUser-Agent: Mozilla/5.0\nAccept-Encoding: gzip, deflate\nAccept-Cherset: ISO-8859-1, utf-8\r\n\r\n";
     auto result = request.from_string(test_http_request);
-    auto k = request.get_field_value("User-Agent");
+    auto k = request.get_header_field_value("User-Agent");
     ASSERT_EQ(k,"Mozilla/5.0" );
 };
 
@@ -254,7 +254,7 @@ TEST(HTTPParser, parse_body_full){
                                     "Content-Length: 27\r\n\r\n"
                                     "field1=value1&field2=value2";
     auto result = request.from_string(test_http_request);
-    std::string body_len = request.get_field_value("Content-Length");
+    std::string body_len = request.get_header_field_value("Content-Length");
     ASSERT_EQ(body_len, "27");
 };
 
@@ -266,7 +266,7 @@ TEST(HTTPParser, parse_body_get){
                                     "Content-Length: 35\r\n\r\n"
                                     "bookId=q2345&author=Tan+Ah+Teck";
     auto result = request.from_string(test_http_request);
-    std::string body_len = request.get_field_value("Content-Length");
+    std::string body_len = request.get_header_field_value("Content-Length");
     ASSERT_EQ(body_len, "35");
 };
 
