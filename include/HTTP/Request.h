@@ -111,7 +111,7 @@ namespace HTTP
         Method get_method() const;
 
         /**
-         * @brief Get the version object
+         * @brief Get the version of HTTP
          * 
          * @return Version 
          */

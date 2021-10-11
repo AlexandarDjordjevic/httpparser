@@ -223,36 +223,28 @@ namespace HTTP{
 
     bool Request::parse_header_fields(const std::string& header)
     {
-        std::size_t h_position = 0;
-        std::pair<std::string, std::size_t> header_tokens;
-        header_tokens = tokenize(header, "\n", h_position);
-
         int first_group = 1;
         int second_group = 2;
+
         std::string key;
         std::string value;
+        std::string header_copy {header};        
         std::smatch match;
-        do
-        {
-            if(std::regex_search(header_tokens.first.cbegin(), header_tokens.first.cend(), match, std::regex("(.*):\\s(.*)")))
-            {
-                key = match[first_group];
-                value = match[second_group];
-            }
-            m_header[key] = value;
-
-            h_position = header_tokens.second;
-            header_tokens = tokenize(header, "\n", header_tokens.second);
-
-        }while( header_tokens.second != 0 );
-
-        header_tokens.first = header.substr(h_position, header.length() - 1);
-        if(std::regex_search(header_tokens.first.cbegin(), header_tokens.first.cend(), match, std::regex("(.*):\\s(.*)")))
+       
+        while(std::regex_search(header_copy.cbegin(), header_copy.cend(), match, std::regex("(.*):\\s(.*)\\n")))
         {
             key = match[first_group];
-            value = match[second_group];
+            value = match[second_group];        
+            m_header[key] = value;
+            header_copy = match.suffix().str();
         }
-        m_header[key] = value;
+
+        if(std::regex_search(header_copy.cbegin(), header_copy.cend(), match, std::regex("(.*):\\s(.*)")))
+        {
+            key = match[first_group];
+            value = match[second_group];        
+            m_header[key] = value;
+        }
         return true;
     }
 

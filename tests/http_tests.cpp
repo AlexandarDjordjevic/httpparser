@@ -266,8 +266,8 @@ TEST(HTTPParser, parse_body_get){
                                     "Content-Length: 35\r\n\r\n"
                                     "bookId=q2345&author=Tan+Ah+Teck";
     auto result = request.from_string(test_http_request);
-    std::string body_data = request.get_body_data();
-    ASSERT_EQ(body_data, "bookId=q2345&author=Tan+Ah+Teck");
+    std::string body_len = request.get_field_value("Content-Length");
+    ASSERT_EQ(body_len, "35");
 };
 
 TEST(HTTPParser, parse_body_type){
