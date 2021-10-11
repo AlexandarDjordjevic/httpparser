@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <HTTP/Request.h>
+#include <HTTP/Response.h>
 
 TEST(HTTPParser, get_request_with_abs_path){
     HTTP::Request request;
@@ -296,3 +297,48 @@ TEST(HTTPParser, parse_body_transfer_encoding){
     std::string body_type = request.get_body_type();
     ASSERT_EQ(body_type, "text/plain");
 };
+
+TEST(HTTPParser, parse_response_with_body){
+    HTTP::Response response;
+    std::string test_response = "HTTP/1.1 404 Not Found\r\n"
+                                "Content-Type: text/plain\n"
+                                "Transfer-Encoding: chunked\r\n\r\n"
+                                "7\r\n"
+                                "Mozilla\r\n"
+                                "Developer\r\n"
+                                "Network\r\n"
+                                "0\r\n\r\n";
+    auto result = response.from_string(test_response);
+    std::string body_type = response.get_body_type();
+    ASSERT_EQ(body_type, "text/plain");
+};
+
+TEST(HTTPParser, parse_response_status){
+    HTTP::Response response;
+    std::string test_response = "HTTP/1.1 200 OK\r\n"
+                                "Date: Mon, 27 Jul 2009 12:28:53 GMT\n"
+                                "Server: Apache/2.2.14 (Win32)\n"
+                                "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\n"
+                                "Content-Length: 88\n"
+                                "Content-Type: text/html\n"
+                                "Connection: Closed\r\n\r\n";
+    auto result = response.from_string(test_response);
+    short status_code = response.get_status_code();
+    ASSERT_EQ(status_code, 200);
+};
+
+TEST(HTTPParser, validate_respons){
+    HTTP::Response response;
+    std::string test_response = "HTTP/1.1 200 OK\r\n"
+                                "Date: Mon, 27 Jul 2009 12:28:53 GMT\n"
+                                "Server: Apache/2.2.14 (Win32)\n"
+                                "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\n"
+                                "Content-Length: 88\n"
+                                "Content-Type: text/html\n"
+                                "Connection: Closed\r\n\r\n";
+    auto result = response.from_string(test_response);
+    ASSERT_TRUE(result);
+};
+
+
+
