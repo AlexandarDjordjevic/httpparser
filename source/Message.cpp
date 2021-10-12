@@ -23,8 +23,8 @@ namespace HTTP{
         return {};
     }
 
-     std::string Message::get_body_type() const 
-    {
+     std::string Message::get_body_type() const  
+    { 
         return m_body.type;
     }
 
