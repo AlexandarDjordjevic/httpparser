@@ -117,7 +117,7 @@ namespace HTTP
 protected:
 
         /**
-         * @brief Parsing status line of http message
+         * @brief Parsing status line of http messag
          * 
          * @param status_line 
          * @return true if status line is valid, otherwise returns false
