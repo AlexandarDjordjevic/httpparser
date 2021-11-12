@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(source
         source/Request.cpp
+        source/Message.cpp
+        source/Response.cpp
     )
 
 add_subdirectory(external/Uri)
